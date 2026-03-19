@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>e스포츠 데이터 대시보드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background-color: #f4f7f9; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h1, h2 { color: #1a2c4e; }
+        #ai-summary { background-color: #eaf2fd; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 5px solid #4a90e2; }
+        #ai-summary-content { white-space: pre-wrap; line-height: 1.6; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .loader { text-align: center; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 e스포츠 데이터 대시보드</h1>
+        <div id="ai-summary">
+            <h2>🤖 AI 자동 요약</h2>
+            <p id="ai-summary-content" class="loader">AI 요약 데이터를 불러오는 중...</p>
+        </div>
+        <h2>📈 전체 데이터</h2>
+        <div id="raw-data-table"><p class="loader">전체 데이터를 불러오는 중...</p></div>
+    </div>
+    <script>
+        const summaryCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkEQ-VaTUIX5vQ3e9Qa7RIJAVSnp9RpnXSqHUH63XX_vIsi_pwQse-ewhWu6xl-JyqX13rtuuqCeY6/pub?gid=1567953602&single=true&output=csv본_시트의_CSV_링크를_붙여넣으세요";
+        const rawDataCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkEQ-VaTUIX5vQ3e9Qa7RIJAVSnp9RpnXSqHUH63XX_vIsi_pwQse-ewhWu6xl-JyqX13rtuuqCeY6/pub?gid=0&single=true&output=csvAW데이터_시트의_CSV_링크를_붙여넣으세요";
+
+        Papa.parse(summaryCsvUrl, {
+            download: true,
+            complete: r => { document.getElementById('ai-summary-content').innerText = (r.data[0] && r.data[0][0]) || '요약 데이터 없음.'; },
+            error: e => { document.getElementById('ai-summary-content').innerText = '요약 데이터 로딩 오류.'; }
+        });
+        Papa.parse(rawDataCsvUrl, {
+            download: true,
+            header: true,
+            complete: r => {
+                const container = document.getElementById('raw-data-table');
+                if (!r.data || r.data.length === 0) { container.innerHTML = '<p>표시할 데이터가 없습니다.</p>'; return; }
+                let table = '<table><thead><tr>' + r.meta.fields.map(f => `<th>${f}</th>`).join('') + '</tr></thead><tbody>';
+                table += r.data.map(row => '<tr>' + r.meta.fields.map(f => `<td>${row[f] || ''}</td>`).join('') + '</tr>').join('');
+                container.innerHTML = table + '</tbody></table>';
+            },
+            error: e => { document.getElementById('raw-data-table').innerHTML = '<p>전체 데이터 로딩 중 오류가 발생했습니다.</p>'; }
+        });
+    </script>
+</body>
+</html>
