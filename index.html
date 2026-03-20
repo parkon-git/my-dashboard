@@ -14,6 +14,7 @@
             --text-main: #e5e7eb;
             --text-muted: #9ca3af;
             --point-ow-orange: #f99e1a; 
+            --point-blue: #60a5fa; /* 다크모드용 파란색 (긍정) */
             --point-red: #ef4444;
             --point-yellow: #f59e0b;
         }
@@ -33,20 +34,65 @@
             padding: 40px 20px;
         }
 
-        .disclaimer {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
+        /* 헤더 영역 (제목, 메타데이터, 안내문구) */
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .eyebrow {
+            color: var(--point-ow-orange);
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
 
         h1 {
-            font-size: 1.8rem;
-            margin-top: 20px;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: #ffffff;
         }
 
+        .metadata {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            color: #d1d5db;
+            flex-wrap: wrap;
+        }
+
+        .meta-item span.label {
+            color: var(--text-muted);
+            margin-right: 6px;
+        }
+
+        .disclaimer-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 16px 24px;
+            border-radius: 8px;
+            display: inline-block;
+            text-align: left;
+        }
+
+        .disclaimer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .disclaimer:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 본문 공통 */
         h2 {
             font-size: 1.3rem;
             margin-top: 40px;
@@ -117,7 +163,7 @@
             text-align: center;
         }
         
-        .badge.positive { background-color: rgba(249, 158, 26, 0.15); color: var(--point-ow-orange); }
+        .badge.positive { background-color: rgba(96, 165, 250, 0.15); color: var(--point-blue); }
         .badge.mixed { background-color: rgba(245, 158, 11, 0.15); color: var(--point-yellow); }
         .badge.negative { background-color: rgba(239, 68, 68, 0.15); color: var(--point-red); }
 
@@ -173,10 +219,22 @@
 <body>
 
 <div class="container">
-    <div class="disclaimer">※본 문서는 LLM에 의해 자동으로 생성된 뒤 검토 및 보완되었습니다.</div>
-    <div class="disclaimer">※본 문서의 시청 지표는 외부 트래킹 사이트(Esports Chart, 소프트콘 등)의 지표를 기반으로 작성되었고, 실제 지표와는 차이가 있을 수 있습니다.</div>
+    
+    <header class="report-header">
+        <div class="eyebrow">2026 OWCS KOREA STAGE 1</div>
+        <h1>OWCS 개막전 일일 리포트</h1>
+        
+        <div class="metadata">
+            <div class="meta-item"><span class="label">분석 대상 :</span> 2026-03-20(금) 개막전</div>
+            <div class="meta-item"><span class="label">작성일 :</span> <span id="publish-date"></span></div>
+            <div class="meta-item"><span class="label">작성자 :</span> 슈터본부 슈터OPS실 브랜딩팀</div>
+        </div>
 
-    <h1>OWCS 개막전 일일 리포트</h1>
+        <div class="disclaimer-box">
+            <div class="disclaimer">※ 본 문서는 LLM에 의해 자동으로 생성된 뒤 검토 및 보완되었습니다.</div>
+            <div class="disclaimer">※ 본 문서의 시청 지표는 외부 트래킹 사이트(Esports Chart, 소프트콘 등)의 지표를 기반으로 작성되었고, 실제 지표와는 차이가 있을 수 있습니다.</div>
+        </div>
+    </header>
 
     <h2>1. 요약</h2>
     <div class="grid-cards">
@@ -271,6 +329,11 @@
 
 <script>
     const GOOGLE_SHEET_CSV_URL = "";
+
+    // 발행일(페이지 로드 시점) 자동 입력 로직
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    document.getElementById('publish-date').innerText = formattedDate;
 
     let chartLabels = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'];
     let pccuData = [15000, 22000, 31000, 28000, 42150, 39000, 35000, 21000];
