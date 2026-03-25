@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OWCS 개막전 일일 보고서</title>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-    <!-- [수정됨] 오류 방지를 위해 명확한 Chart.js 버전 번들이 포함된 CDN으로 변경 -->
+    <!-- 명확한 Chart.js 버전 번들이 포함된 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.js"></script>
     <style>
         :root {
@@ -178,13 +178,11 @@
             padding: 24px;
             margin-top: 20px;
             height: 420px;
-            /* [추가됨] 캔버스 붕괴 현상 방지용 속성 */
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        /* [추가됨] 캔버스를 감싸는 내부 래퍼 설정 (렌더링 안정성 확보) */
         .canvas-wrapper {
             position: relative;
             width: 100%;
@@ -307,7 +305,7 @@
     </div>
 
     <div class="chart-container">
-        <!-- [수정됨] 캔버스 사이즈가 0으로 붕괴되지 않도록 래퍼 요소 추가 -->
+        <!-- 캔버스 래퍼 구조 유지 -->
         <div class="canvas-wrapper">
             <canvas id="trendChart"></canvas>
         </div>
@@ -407,130 +405,127 @@
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     document.getElementById('publish-date').innerText = formattedDate;
 
-// 일자별 데이터 및 VIEW 데이터
-let chartLabels = ['2024-03-01', '2024-03-02', '2024-03-03', '2024-03-04', '2024-03-05'];
-let pccuData = [35000, 38200, 42150, 45000, 46800];
-let acuData = [24000, 26100, 28400, 31200, 32500];
-let viewData = [950000, 1050000, 1205000, 1420000, 1650000]; 
+    let chartLabels = ['2024-03-01', '2024-03-02', '2024-03-03', '2024-03-04', '2024-03-05'];
+    let pccuData = [35000, 38200, 42150, 45000, 46800];
+    let acuData = [24000, 26100, 28400, 31200, 32500];
+    let viewData = [950000, 1050000, 1205000, 1420000, 1650000]; 
 
-function renderChart() {
-    const ctx = document.getElementById('trendChart').getContext('2d');
-    
-    new Chart(ctx, {
-        // 복합 차트(Line + Bar)를 위해 기본 타입은 Line으로 둠
-        type: 'line', 
-        data: {
-            labels: chartLabels,
-            datasets: [
-                // VIEW는 막대 그래프로 배경처럼 표시 (우측 Y축 사용)
-                {
-                    type: 'bar',
-                    label: 'VIEW 누적 조회수',
-                    data: viewData,
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)', // 튀지 않는 은은한 색상
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    yAxisID: 'y-view' // 별도의 스케일(축) 설정
-                },
-                // PCCU는 영역을 채우는 선 그래프 (좌측 Y축 사용)
-                {
-                    type: 'line',
-                    label: 'PCCU',
-                    data: pccuData,
-                    borderColor: '#f99e1a',
-                    backgroundColor: 'rgba(249, 158, 26, 0.1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#f99e1a',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    fill: true,
-                    tension: 0.4,
-                    yAxisID: 'y-viewers'
-                },
-                // ACU는 점선 그래프 (좌측 Y축 사용)
-                {
-                    type: 'line',
-                    label: 'ACU',
-                    data: acuData,
-                    borderColor: '#60a5fa',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#60a5fa',
-                    pointRadius: 4,
-                    borderDash: [5, 5],
-                    tension: 0.4,
-                    yAxisID: 'y-viewers'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
+    // DOM 로드 후 실행되도록 유지하여 렌더링 안정성 확보
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        
+        new Chart(ctx, {
+            // 마음에 드셨던 예전 그래프 스타일 적용
+            type: 'line', 
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    // VIEW는 막대 그래프로 배경처럼 표시 (우측 Y축 사용)
+                    {
+                        type: 'bar',
+                        label: 'VIEW 누적 조회수',
+                        data: viewData,
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)', // 튀지 않는 은은한 색상
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        yAxisID: 'y-view' // 별도의 스케일(축) 설정
+                    },
+                    // PCCU는 영역을 채우는 선 그래프 (좌측 Y축 사용)
+                    {
+                        type: 'line',
+                        label: 'PCCU',
+                        data: pccuData,
+                        borderColor: '#f99e1a',
+                        backgroundColor: 'rgba(249, 158, 26, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#f99e1a',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4,
+                        yAxisID: 'y-viewers'
+                    },
+                    // ACU는 점선 그래프 (좌측 Y축 사용)
+                    {
+                        type: 'line',
+                        label: 'ACU',
+                        data: acuData,
+                        borderColor: '#60a5fa',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#60a5fa',
+                        pointRadius: 4,
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        yAxisID: 'y-viewers'
+                    }
+                ]
             },
-            plugins: {
-                legend: {
-                    labels: { color: '#e5e7eb', font: { family: 'Pretendard' } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
                 },
-                tooltip: {
-                    callbacks: {
-                        // 천 단위 콤마 찍기
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
+                plugins: {
+                    legend: {
+                        labels: { color: '#e5e7eb', font: { family: 'Pretendard' } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            // 천 단위 콤마 찍기
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('ko-KR').format(context.parsed.y);
+                                }
+                                return label;
                             }
-                            if (context.parsed.y !== null) {
-                                label += new Intl.NumberFormat('ko-KR').format(context.parsed.y);
-                            }
-                            return label;
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#2d333b' },
+                        ticks: { color: '#9ca3af', font: { family: 'Pretendard' } }
+                    },
+                    // 좌측 Y축: PCCU와 ACU용
+                    'y-viewers': {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: '#2d333b' },
+                        ticks: { color: '#9ca3af', font: { family: 'Pretendard' } },
+                        title: {
+                            display: true,
+                            text: '동시 시청자 (명)',
+                            color: '#9ca3af'
+                        }
+                    },
+                    // 우측 Y축: VIEW(누적 조회수)용 (단위가 매우 크기 때문)
+                    'y-view': {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false }, // 좌측 축의 그리드와 겹치지 않게 선을 그리지 않음
+                        ticks: { color: '#9ca3af', font: { family: 'Pretendard' } },
+                        title: {
+                            display: true,
+                            text: '누적 조회수 (회)',
+                            color: '#9ca3af'
                         }
                     }
                 }
-            },
-            scales: {
-                x: {
-                    grid: { color: '#2d333b' },
-                    ticks: { color: '#9ca3af', font: { family: 'Pretendard' } }
-                },
-                // 좌측 Y축: PCCU와 ACU용
-                'y-viewers': {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    grid: { color: '#2d333b' },
-                    ticks: { color: '#9ca3af', font: { family: 'Pretendard' } },
-                    title: {
-                        display: true,
-                        text: '동시 시청자 (명)',
-                        color: '#9ca3af'
-                    }
-                },
-                // 우측 Y축: VIEW(누적 조회수)용 (단위가 매우 크기 때문)
-                'y-view': {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    grid: { drawOnChartArea: false }, // 좌측 축의 그리드와 겹치지 않게 선을 그리지 않음
-                    ticks: { color: '#9ca3af', font: { family: 'Pretendard' } },
-                    title: {
-                        display: true,
-                        text: '누적 조회수 (회)',
-                        color: '#9ca3af'
-                    }
-                }
             }
-        }
+        });
     });
-}
+</script>
 
-// 혹시 캔버스가 그려지지 않는 오류를 방지하려면, 아래처럼 DOM 로드 후 실행하는 것을 권장합니다.
-// document.addEventListener("DOMContentLoaded", function() {
-//     renderChart();
-// });
-// 또는 기존처럼 바로 호출
-renderChart();
+</body>
+</html>
