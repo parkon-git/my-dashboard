@@ -14,7 +14,6 @@
             --text-main: #e5e7eb;
             --text-muted: #9ca3af;
             --point-ow-orange: #f99e1a; 
-            /* [수정됨] 하락(-, 파란색), 상승(+, 붉은색) 색상 정의 */
             --point-blue: #38bdf8; /* 하락 */
             --point-red: #ef4444; /* 상승 */
             --point-yellow: #f59e0b;
@@ -77,9 +76,6 @@
             color: var(--text-muted);
             margin-bottom: 6px;
         }
-        .disclaimer:last-child {
-            margin-bottom: 0;
-        }
         
         /* 본문 공통 */
         h2, h3 {
@@ -113,7 +109,7 @@
             margin-bottom: 8px;
         }
         .card .desc {
-            font-size: 0.9rem; /* 폰트 약간 키움 */
+            font-size: 0.9rem;
             font-weight: 500;
         }
         
@@ -148,6 +144,7 @@
             font-weight: 700;
             margin-right: 10px;
         }
+        /* 긍정/부정 뱃지 색상도 증감률과 통일 (긍정=상승=RED, 부정=하락=BLUE) */
         .badge.positive { background-color: rgba(239, 68, 68, 0.15); color: var(--point-red); }
         .badge.mixed { background-color: rgba(245, 158, 11, 0.15); color: var(--point-yellow); }
         .badge.negative { background-color: rgba(56, 189, 248, 0.15); color: var(--point-blue); }
@@ -175,7 +172,7 @@
             overflow: hidden;
         }
         th, td {
-            padding: 16px;
+            padding: 14px 16px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
@@ -187,7 +184,17 @@
             font-weight: 500;
         }
         
-        /* [수정됨] 증감률 텍스트 스타일 */
+        /* [수정됨] 테이블 그룹 헤더 스타일 (이미지 참고) */
+        .group-header-row td {
+            background-color: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        /* [수정됨] 하위 데이터 행 들여쓰기 (이미지 참고) */
+        .sub-row td:first-child {
+            padding-left: 32px;
+        }
+
         .diff { font-size: 0.85em; margin-left: 8px; font-weight: 500; }
         .diff.up { color: var(--point-red); }
         .diff.down { color: var(--point-blue); }
@@ -229,17 +236,17 @@
         <div class="card">
             <div class="title">PCCU (최고 동시 시청자)</div>
             <div class="value" id="val-pccu">42,150</div>
-            <div class="desc diff up" id="desc-pccu">▲ 12.4%</div>
+            <div class="desc diff up">▲ 12.4%</div>
         </div>
         <div class="card">
             <div class="title">ACU (평균 동시 시청자)</div>
             <div class="value" id="val-acu">28,400</div>
-            <div class="desc diff up" id="desc-acu">▲ 8.2%</div>
+            <div class="desc diff up">▲ 8.2%</div>
         </div>
         <div class="card">
             <div class="title">VIEW (누적 조회수)</div>
             <div class="value" id="val-view">1,205,000</div>
-            <div class="desc diff up" id="desc-view">▲ 15.1%</div>
+            <div class="desc diff up">▲ 15.1%</div>
         </div>
     </div>
     <div class="summary-box">
@@ -251,7 +258,7 @@
         <p>📌 <strong style="color: var(--point-ow-orange);">핵심 요약 :</strong> 전반적인 지표는 이전 시즌 개막전 대비 약 10% 이상 상승하며 성공적인 출발을 보였습니다. 긍정적인 경기력 평가가 주를 이루었으나, 순간적인 플랫폼 버퍼링 이슈에 대한 개선이 필요해 보입니다.</p>
     </div>
 
-    <!-- ==================== 2. 시청 지표 추이 (구조 변경) ==================== -->
+    <!-- ==================== 2. 시청 지표 추이 ==================== -->
     <h2>2. 시청 지표 추이</h2>
 
     <!-- 2-1. 전체 시청 지표 -->
@@ -273,9 +280,7 @@
                 <th>VIEW</th>
             </tr>
         </thead>
-        <tbody id="table-body-total">
-            <!-- JS로 데이터 채워짐 -->
-        </tbody>
+        <tbody id="table-body-total"></tbody>
     </table>
 
     <!-- 2-2. 한국 시청 지표 -->
@@ -289,16 +294,13 @@
      <table>
         <thead>
             <tr>
-                <th>일자</th>
-                <th>플랫폼</th>
+                <th>일자 / 플랫폼</th>
                 <th>PCCU</th>
                 <th>ACU</th>
                 <th>VIEW</th>
             </tr>
         </thead>
-        <tbody id="table-body-kr">
-             <!-- JS로 데이터 채워짐 -->
-        </tbody>
+        <tbody id="table-body-kr"></tbody>
     </table>
 
     <!-- 2-3. 글로벌 시청 지표 -->
@@ -312,16 +314,13 @@
     <table>
         <thead>
             <tr>
-                <th>일자</th>
-                <th>플랫폼</th>
+                <th>일자 / 플랫폼</th>
                 <th>PCCU</th>
                 <th>ACU</th>
                 <th>VIEW</th>
             </tr>
         </thead>
-        <tbody id="table-body-global">
-            <!-- JS로 데이터 채워짐 -->
-        </tbody>
+        <tbody id="table-body-global"></tbody>
     </table>
 
     <!-- ==================== 기존 3, 4번 섹션 유지 ==================== -->
@@ -331,12 +330,12 @@
     </div>
     <div class="grid-cards" style="grid-template-columns: 1fr;">
         <div class="card text-left" style="padding: 24px;">
-            <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--point-blue);">📊 경기 결과 (개막전)</h3>
+            <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--point-red);">📊 경기 결과 (개막전)</h3>
             <ul class="info-list">
                 <li><strong>1경기:</strong> Team A ( 3 ) vs ( 1 ) Team B - Team A 승리</li>
                 <li><strong>2경기:</strong> Team C ( 0 ) vs ( 3 ) Team D - Team D 승리</li>
             </ul>
-            <h3 style="margin-top: 24px; font-size: 1.1rem; color: var(--point-red);">⚠️ 진행 간 이슈 사항</h3>
+            <h3 style="margin-top: 24px; font-size: 1.1rem; color: var(--point-yellow);">⚠️ 진행 간 이슈 사항</h3>
             <ul class="info-list">
                 <li>2세트 진행 중 외부 송출 플랫폼(치지직/아프리카TV) 양측에서 순간적인 화질 저하 및 버퍼링 발생 (약 3분간)</li>
                 <li>현재 플랫폼 엔지니어 팀과 원인 파악 및 회선 안정화 작업 진행 중</li>
@@ -349,7 +348,7 @@
         📌 <strong>유저 동향 요약:</strong> 뛰어난 경기력과 역전극에 대한 긍정적 반응이 주를 이루나, 시청 환경 안정성에 대한 피드백이 존재합니다.
     </div>
     <div class="trend-item">
-        <span class="badge positive">POSITIVE</span>
+        <span class="badge positive">긍정</span>
         <p>선수들의 수준 높은 경기력과 예측 불가능한 한타 구도에 대한 찬사가 많았습니다. 특히 3세트 역전승 구간에서 커뮤니티 언급량이 당일 최고치를 기록하며 코어 팬층의 높은 몰입도를 보여주었습니다.</p>
     </div>
     <div class="trend-item">
@@ -357,7 +356,7 @@
         <p>특정 조합(예: 러쉬 조합) 위주의 메타가 반복되면서 피로감을 호소하는 의견이 일부 관찰되었습니다. 경기 양상의 다양성 측면에서 이후 매치에서 시청자 반응을 지속적으로 트래킹할 필요가 있습니다.</p>
     </div>
     <div class="trend-item">
-        <span class="badge negative">CRITICAL</span>
+        <span class="badge negative">부정</span>
         <p>2세트 진행 중 외부 송출 플랫폼(치지직/아프리카TV) 양측에서 순간적인 화질 저하와 버퍼링 현상이 제보되었습니다. 주요 교전 장면을 놓친 시청자들의 강한 불만이 발생했으므로, 플랫폼 측과의 회선 안정화 논의가 필요합니다.</p>
     </div>
 </div>
@@ -370,6 +369,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const formatNumber = (num) => new Intl.NumberFormat('ko-KR').format(num);
     const createDiffSpan = (current, previous) => {
+        if (previous === 0) return '';
         const diff = ((current - previous) / previous) * 100;
         if (isNaN(diff)) return '';
         const className = diff >= 0 ? 'up' : 'down';
@@ -383,73 +383,76 @@ document.addEventListener("DOMContentLoaded", function() {
     // 시즌 데이터
     const seasonData = {
         current: {
-            total: [
-                { date: '2024-03-01', pccu: 35000, acu: 24000, view: 950000 }, { date: '2024-03-02', pccu: 38200, acu: 26100, view: 1050000 },
-                { date: '2024-03-03', pccu: 42150, acu: 28400, view: 1205000 }, { date: '2024-03-04', pccu: 45000, acu: 31200, view: 1420000 },
-                { date: '2024-03-05', pccu: 46800, acu: 32500, view: 1650000 }
-            ],
+            total: dates.map((_, i) => ({ pccu: 35000+i*2950, acu: 24000+i*2125, view: 950000+i*175000 })),
             kr: {
-                'SOOP': [{ pccu: 19800, acu: 14000, view: 450000 }, { pccu: 20500, acu: 14500, view: 550000 }, { pccu: 21500, acu: 15100, view: 750000 }, { pccu: 22100, acu: 15800, view: 850000 }, { pccu: 23000, acu: 16200, view: 950000 }],
-                'CHZZK': [{ pccu: 14600, acu: 9000, view: 300000 }, { pccu: 16200, acu: 10500, view: 400000 }, { pccu: 18300, acu: 11800, view: 680000 }, { pccu: 19500, acu: 13200, view: 780000 }, { pccu: 21800, acu: 14500, view: 880000 }],
-                'YouTube(KR)': [{ pccu: 7800, acu: 5000, view: 150000 }, { pccu: 8100, acu: 5200, view: 200000 }, { pccu: 8700, acu: 5900, view: 310000 }, { pccu: 9200, acu: 6300, view: 380000 }, { pccu: 9800, acu: 6800, view: 450000 }]
+                'SOOP': dates.map((_, i) => ({ pccu: 19800+i*800, acu: 14000+i*550, view: 450000+i*125000 })),
+                'CHZZK': dates.map((_, i) => ({ pccu: 14600+i*1800, acu: 9000+i*1375, view: 300000+i*145000 })),
+                'YouTube(KR)': dates.map((_, i) => ({ pccu: 7800+i*500, acu: 5000+i*450, view: 150000+i*75000 })),
             },
             global: {
-                'YouTube(EN)': [{ pccu: 10200, acu: 7000, view: 250000 }, { pccu: 11500, acu: 7800, view: 350000 }, { pccu: 12100, acu: 8200, view: 450000 }, { pccu: 13500, acu: 9100, view: 550000 }, { pccu: 14200, acu: 9800, view: 650000 }],
-                'YouTube(JP)': [{ pccu: 4800, acu: 3000, view: 100000 }, { pccu: 4700, acu: 3100, view: 120000 }, { pccu: 4700, acu: 3200, view: 160000 }, { pccu: 4900, acu: 3300, view: 190000 }, { pccu: 5100, acu: 3400, view: 220000 }]
+                'YouTube(EN)': dates.map((_, i) => ({ pccu: 10200+i*1000, acu: 7000+i*700, view: 250000+i*100000 })),
+                'YouTube(JP)': dates.map((_, i) => ({ pccu: 4800-i*50, acu: 3000+i*100, view: 100000+i*30000 })),
             }
         },
-        previous: { // 전 시즌 데이터
-            total: [
-                { pccu: 31000, acu: 22000, view: 800000 }, { pccu: 34000, acu: 24000, view: 900000 }, { pccu: 37500, acu: 26200, view: 1050000 },
-                { pccu: 40000, acu: 28000, view: 1200000 }, { pccu: 41500, acu: 29000, view: 1350000 }
-            ],
-             kr: {
-                'SOOP': [{ pccu: 18316, acu: 13309, view: 407609 }, { pccu: 19000, acu: 13800, view: 500000 }, { pccu: 19888, acu: 14353, view: 679347 }, { pccu: 20443, acu: 14781, view: 770000 }, { pccu: 21276, acu: 15218, view: 860000 }],
-                'CHZZK': [{ pccu: 11661, acu: 7431, view: 230414 }, { pccu: 13000, acu: 8700, view: 300000 }, { pccu: 14624, acu: 9744, view: 522273 }, { pccu: 15575, acu: 10543, view: 600000 }, { pccu: 17412, acu: 11590, view: 676000 }],
-                'YouTube(KR)': [{ pccu: 6964, acu: 4553, view: 129870 }, { pccu: 7200, acu: 4700, view: 170000 }, { pccu: 7767, acu: 5373, view: 268138 }, { pccu: 8214, acu: 5737, view: 330000 }, { pccu: 8750, acu: 6193, view: 390000 }]
+        previous: {
+            total: dates.map((_, i) => ({ pccu: 31000+i*2625, acu: 22000+i*1750, view: 800000+i*137500 })),
+            kr: {
+                'SOOP': dates.map((_, i) => ({ pccu: 18316+i*740, acu: 13309+i*477, view: 407609+i*113100 })),
+                'CHZZK': dates.map((_, i) => ({ pccu: 11661+i*1438, acu: 7431+i*1040, view: 230414+i*111400 })),
+                'YouTube(KR)': dates.map((_, i) => ({ pccu: 6964+i*446, acu: 4553+i*410, view: 129870+i*65000 })),
             },
             global: {
-                'YouTube(EN)': [{ pccu: 8585, acu: 6081, view: 204750 }, { pccu: 9700, acu: 6800, view: 280000 }, { pccu: 10185, acu: 7124, view: 368549 }, { pccu: 11363, acu: 7900, view: 450000 }, { pccu: 11952, acu: 8514, view: 530000 }],
-                'YouTube(JP)': [{ pccu: 4873, acu: 3024, view: 97751 }, { pccu: 4600, acu: 3080, view: 117000 }, { pccu: 4771, acu: 3174, view: 156402 }, { pccu: 4800, acu: 3250, view: 185000 }, { pccu: 5000, acu: 3350, view: 215000 }]
+                'YouTube(EN)': dates.map((_, i) => ({ pccu: 8585+i*842, acu: 6081+i*608, view: 204750+i*81300 })),
+                'YouTube(JP)': dates.map((_, i) => ({ pccu: 4873-i*20, acu: 3024+i*81, view: 97751+i*29300 })),
             }
         }
     };
     
-    // --- TABLE & GRAPH Rendering ---
-    
+    // --- Chart & Table Rendering ---
+
+    const commonOptions = (yAxisLabel) => ({
+        responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { labels: { color: '#e5e7eb' }}},
+        scales: {
+            x: { grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' } },
+            'y-left': { position: 'left', grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' }, title: { display: true, text: yAxisLabel, color: '#9ca3af' }},
+            'y-right': { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#9ca3af' }, title: { display: true, text: 'VIEW (회)', color: '#9ca3af' }}
+        }
+    });
+
     // 2-1. Total
     const totalTbody = document.getElementById('table-body-total');
-    seasonData.current.total.forEach((day, i) => {
-        const prevDay = seasonData.previous.total[i];
-        totalTbody.innerHTML += `<tr>
-            <td>${day.date}</td>
-            <td>${formatNumber(day.pccu)}${createDiffSpan(day.pccu, prevDay.pccu)}</td>
-            <td>${formatNumber(day.acu)}${createDiffSpan(day.acu, prevDay.acu)}</td>
-            <td>${formatNumber(day.view)}${createDiffSpan(day.view, prevDay.view)}</td>
+    dates.forEach((date, i) => {
+        const current = seasonData.current.total[i];
+        const previous = seasonData.previous.total[i];
+        totalTbody.innerHTML += `<tr class="group-header-row">
+            <td>${date}</td>
+            <td>${formatNumber(current.pccu)}${createDiffSpan(current.pccu, previous.pccu)}</td>
+            <td>${formatNumber(current.acu)}${createDiffSpan(current.acu, previous.acu)}</td>
+            <td>${formatNumber(current.view)}${createDiffSpan(current.view, previous.view)}</td>
         </tr>`;
     });
     
-    new Chart(document.getElementById('trendChart').getContext('2d'), {
-        type: 'line', data: { labels: dates, datasets: [
-            { type: 'bar', label: 'VIEW (Current)', data: seasonData.current.total.map(d => d.view), backgroundColor: 'rgba(255, 255, 255, 0.05)', yAxisID: 'y-view' },
-            { label: 'PCCU (Current)', data: seasonData.current.total.map(d => d.pccu), borderColor: '#f99e1a', tension: 0.4, yAxisID: 'y-pccu' },
-            { label: 'PCCU (Previous)', data: seasonData.previous.total.map(d => d.pccu), borderColor: 'rgba(249, 158, 26, 0.4)', borderDash: [5, 5], tension: 0.4, yAxisID: 'y-pccu' },
+    new Chart(document.getElementById('trendChart'), {
+        type: 'bar', data: { labels: dates, datasets: [
+            { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map(d=>d.pccu), borderColor: '#f99e1a', tension: 0.4, yAxisID: 'y-left' },
+            { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map(d=>d.pccu), borderColor: 'rgba(249, 158, 26, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
+            { type: 'line', label: 'ACU (Current)', data: seasonData.current.total.map(d=>d.acu), borderColor: '#38bdf8', tension: 0.4, yAxisID: 'y-left' },
+            { type: 'line', label: 'ACU (Previous)', data: seasonData.previous.total.map(d=>d.acu), borderColor: 'rgba(56, 189, 248, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
+            { label: 'VIEW (Current)', data: seasonData.current.total.map(d=>d.view), backgroundColor: 'rgba(255, 255, 255, 0.1)', yAxisID: 'y-right' },
+            { label: 'VIEW (Previous)', data: seasonData.previous.total.map(d=>d.view), backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.3)', borderWidth: 1, yAxisID: 'y-right'},
         ]},
-        options: { responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false}, scales: {
-             x: { grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' } },
-            'y-pccu': { position: 'left', grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' }, title: { display: true, text: 'PCCU (명)', color: '#9ca3af' } },
-            'y-view': { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#9ca3af' }, title: { display: true, text: 'VIEW (회)', color: '#9ca3af' } }
-        }}
+        options: commonOptions('PCCU / ACU (명)')
     });
 
     // 2-2. KR
     const krTbody = document.getElementById('table-body-kr');
     dates.forEach((date, i) => {
+        krTbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
         Object.keys(seasonData.current.kr).forEach(platform => {
             const current = seasonData.current.kr[platform][i];
             const previous = seasonData.previous.kr[platform][i];
-            krTbody.innerHTML += `<tr>
-                <td>${date}</td>
+            krTbody.innerHTML += `<tr class="sub-row">
                 <td>${platform}</td>
                 <td>${formatNumber(current.pccu)}${createDiffSpan(current.pccu, previous.pccu)}</td>
                 <td>${formatNumber(current.acu)}${createDiffSpan(current.acu, previous.acu)}</td>
@@ -457,24 +460,23 @@ document.addEventListener("DOMContentLoaded", function() {
             </tr>`;
         });
     });
-    new Chart(document.getElementById('krChart').getContext('2d'), {
-        type: 'line', data: { labels: dates, datasets: [
-            { label: 'SOOP (Current)', data: seasonData.current.kr['SOOP'].map(d=>d.pccu), borderColor: '#A970FF', tension: 0.4 },
-            { label: 'SOOP (Previous)', data: seasonData.previous.kr['SOOP'].map(d=>d.pccu), borderColor: 'rgba(169, 112, 255, 0.4)', borderDash: [5, 5], tension: 0.4 },
-            { label: 'CHZZK (Current)', data: seasonData.current.kr['CHZZK'].map(d=>d.pccu), borderColor: '#00FFA3', tension: 0.4 },
-            { label: 'CHZZK (Previous)', data: seasonData.previous.kr['CHZZK'].map(d=>d.pccu), borderColor: 'rgba(0, 255, 163, 0.4)', borderDash: [5, 5], tension: 0.4 },
+    new Chart(document.getElementById('krChart'), {
+        type: 'bar', data: { labels: dates, datasets: [
+            { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.kr).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: '#f99e1a', tension: 0.4, yAxisID: 'y-left' },
+            { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map((_, i) => Object.values(seasonData.previous.kr).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: 'rgba(249, 158, 26, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
+            { label: 'VIEW (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.kr).reduce((sum, p) => sum + p[i].view, 0)), backgroundColor: 'rgba(255, 255, 255, 0.1)', yAxisID: 'y-right' },
         ]},
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { title: { display: true, text: 'PCCU (명)' } } } }
+        options: commonOptions('PCCU (명)')
     });
 
     // 2-3. Global
     const globalTbody = document.getElementById('table-body-global');
-    dates.forEach((date, i) => {
+     dates.forEach((date, i) => {
+        globalTbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
         Object.keys(seasonData.current.global).forEach(platform => {
             const current = seasonData.current.global[platform][i];
             const previous = seasonData.previous.global[platform][i];
-            globalTbody.innerHTML += `<tr>
-                <td>${date}</td>
+            globalTbody.innerHTML += `<tr class="sub-row">
                 <td>${platform}</td>
                 <td>${formatNumber(current.pccu)}${createDiffSpan(current.pccu, previous.pccu)}</td>
                 <td>${formatNumber(current.acu)}${createDiffSpan(current.acu, previous.acu)}</td>
@@ -482,14 +484,13 @@ document.addEventListener("DOMContentLoaded", function() {
             </tr>`;
         });
     });
-    new Chart(document.getElementById('globalChart').getContext('2d'), {
-        type: 'line', data: { labels: dates, datasets: [
-            { label: 'YouTube(EN) (Current)', data: seasonData.current.global['YouTube(EN)'].map(d=>d.pccu), borderColor: '#FF0000', tension: 0.4 },
-            { label: 'YouTube(EN) (Previous)', data: seasonData.previous.global['YouTube(EN)'].map(d=>d.pccu), borderColor: 'rgba(255, 0, 0, 0.4)', borderDash: [5, 5], tension: 0.4 },
-            { label: 'YouTube(JP) (Current)', data: seasonData.current.global['YouTube(JP)'].map(d=>d.pccu), borderColor: '#FFCD00', tension: 0.4 },
-            { label: 'YouTube(JP) (Previous)', data: seasonData.previous.global['YouTube(JP)'].map(d=>d.pccu), borderColor: 'rgba(255, 205, 0, 0.4)', borderDash: [5, 5], tension: 0.4 },
+    new Chart(document.getElementById('globalChart'), {
+        type: 'bar', data: { labels: dates, datasets: [
+            { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.global).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: '#38bdf8', tension: 0.4, yAxisID: 'y-left' },
+            { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map((_, i) => Object.values(seasonData.previous.global).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: 'rgba(56, 189, 248, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
+            { label: 'VIEW (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.global).reduce((sum, p) => sum + p[i].view, 0)), backgroundColor: 'rgba(255, 255, 255, 0.1)', yAxisID: 'y-right' },
         ]},
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { title: { display: true, text: 'PCCU (명)' } } } }
+        options: commonOptions('PCCU (명)')
     });
 });
 </script>
