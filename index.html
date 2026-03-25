@@ -144,7 +144,6 @@
             font-weight: 700;
             margin-right: 10px;
         }
-        /* 긍정/부정 뱃지 색상도 증감률과 통일 (긍정=상승=RED, 부정=하락=BLUE) */
         .badge.positive { background-color: rgba(239, 68, 68, 0.15); color: var(--point-red); }
         .badge.mixed { background-color: rgba(245, 158, 11, 0.15); color: var(--point-yellow); }
         .badge.negative { background-color: rgba(56, 189, 248, 0.15); color: var(--point-blue); }
@@ -184,13 +183,11 @@
             font-weight: 500;
         }
         
-        /* [수정됨] 테이블 그룹 헤더 스타일 (이미지 참고) */
         .group-header-row td {
             background-color: rgba(255, 255, 255, 0.05);
             font-weight: 600;
             color: var(--text-main);
         }
-        /* [수정됨] 하위 데이터 행 들여쓰기 (이미지 참고) */
         .sub-row td:first-child {
             padding-left: 32px;
         }
@@ -235,17 +232,17 @@
     <div class="grid-cards">
         <div class="card">
             <div class="title">PCCU (최고 동시 시청자)</div>
-            <div class="value" id="val-pccu">42,150</div>
+            <div class="value">42,150</div>
             <div class="desc diff up">▲ 12.4%</div>
         </div>
         <div class="card">
             <div class="title">ACU (평균 동시 시청자)</div>
-            <div class="value" id="val-acu">28,400</div>
+            <div class="value">28,400</div>
             <div class="desc diff up">▲ 8.2%</div>
         </div>
         <div class="card">
             <div class="title">VIEW (누적 조회수)</div>
-            <div class="value" id="val-view">1,205,000</div>
+            <div class="value">1,205,000</div>
             <div class="desc diff up">▲ 15.1%</div>
         </div>
     </div>
@@ -264,7 +261,7 @@
     <!-- 2-1. 전체 시청 지표 -->
     <h3>2-1. 전체 시청 지표</h3>
     <div class="chart-summary text-left">
-        📌 <strong>일자별 시청 지표 요약:</strong> 대회 개막 이후 꾸준한 상승 곡선을 그리고 있으며, 특히 누적 조회수(VIEW)의 증가폭이 가장 두드러집니다.
+        📌 <strong>일자별 시청 지표 요약:</strong> 모든 핵심 지표(PCCU, ACU, VIEW)에서 전 시즌 대비 꾸준한 상승세를 보이고 있으며, 특히 개막 3일차에 시청자가 가장 높게 집계되었습니다.
     </div>
     <div class="chart-container">
         <div class="canvas-wrapper">
@@ -288,9 +285,6 @@
     <div class="chart-summary text-left">
         📌 <strong>한국 지역 요약:</strong> 치지직(CHZZK) 플랫폼의 성장이 두드러지며 국내 시청 지표 상승을 주도했습니다. SOOP(구 아프리카TV)은 코어 팬덤 기반의 안정적인 수치를 유지했습니다.
     </div>
-    <div class="chart-container">
-        <div class="canvas-wrapper"><canvas id="krChart"></canvas></div>
-    </div>
      <table>
         <thead>
             <tr>
@@ -308,9 +302,6 @@
     <div class="chart-summary text-left">
         📌 <strong>글로벌 지역 요약:</strong> 영어권 YouTube 채널의 PCCU가 크게 상승하며 글로벌 흥행을 견인했습니다. 일본 지역은 전 시즌과 비슷한 수준을 유지했습니다.
     </div>
-    <div class="chart-container">
-        <div class="canvas-wrapper"><canvas id="globalChart"></canvas></div>
-    </div>
     <table>
         <thead>
             <tr>
@@ -322,6 +313,19 @@
         </thead>
         <tbody id="table-body-global"></tbody>
     </table>
+    <!-- [추가됨] 국가별 테이블 -->
+    <table>
+        <thead>
+            <tr>
+                <th>일자 / 국가</th>
+                <th>PCCU</th>
+                <th>ACU</th>
+                <th>VIEW</th>
+            </tr>
+        </thead>
+        <tbody id="table-body-country"></tbody>
+    </table>
+
 
     <!-- ==================== 기존 3, 4번 섹션 유지 ==================== -->
     <h2>3. 주요 사항</h2>
@@ -392,6 +396,11 @@ document.addEventListener("DOMContentLoaded", function() {
             global: {
                 'YouTube(EN)': dates.map((_, i) => ({ pccu: 10200+i*1000, acu: 7000+i*700, view: 250000+i*100000 })),
                 'YouTube(JP)': dates.map((_, i) => ({ pccu: 4800-i*50, acu: 3000+i*100, view: 100000+i*30000 })),
+            },
+            country: {
+                'North America': dates.map((_, i) => ({ pccu: 8000+i*800, acu: 5500+i*500, view: 200000+i*80000 })),
+                'Europe': dates.map((_, i) => ({ pccu: 5000+i*400, acu: 3500+i*300, view: 120000+i*40000 })),
+                'Japan': dates.map((_, i) => ({ pccu: 4800-i*50, acu: 3000+i*100, view: 100000+i*30000 })),
             }
         },
         previous: {
@@ -404,15 +413,19 @@ document.addEventListener("DOMContentLoaded", function() {
             global: {
                 'YouTube(EN)': dates.map((_, i) => ({ pccu: 8585+i*842, acu: 6081+i*608, view: 204750+i*81300 })),
                 'YouTube(JP)': dates.map((_, i) => ({ pccu: 4873-i*20, acu: 3024+i*81, view: 97751+i*29300 })),
+            },
+            country: {
+                'North America': dates.map((_, i) => ({ pccu: 7000+i*700, acu: 4800+i*400, view: 180000+i*70000 })),
+                'Europe': dates.map((_, i) => ({ pccu: 4500+i*300, acu: 3200+i*200, view: 100000+i*30000 })),
+                'Japan': dates.map((_, i) => ({ pccu: 4873-i*20, acu: 3024+i*81, view: 97751+i*29300 })),
             }
         }
     };
     
     // --- Chart & Table Rendering ---
-
     const commonOptions = (yAxisLabel) => ({
         responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { labels: { color: '#e5e7eb' }}},
+        plugins: { legend: { display: false } }, // 범례 숨김
         scales: {
             x: { grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' } },
             'y-left': { position: 'left', grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' }, title: { display: true, text: yAxisLabel, color: '#9ca3af' }},
@@ -435,12 +448,12 @@ document.addEventListener("DOMContentLoaded", function() {
     
     new Chart(document.getElementById('trendChart'), {
         type: 'bar', data: { labels: dates, datasets: [
-            { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map(d=>d.pccu), borderColor: '#f99e1a', tension: 0.4, yAxisID: 'y-left' },
+            { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map(d=>d.pccu), borderColor: '#f99e1a', tension: 0.4, yAxisID: 'y-left', pointStyle: 'rectRot', pointRadius: 5 },
             { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map(d=>d.pccu), borderColor: 'rgba(249, 158, 26, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
             { type: 'line', label: 'ACU (Current)', data: seasonData.current.total.map(d=>d.acu), borderColor: '#38bdf8', tension: 0.4, yAxisID: 'y-left' },
             { type: 'line', label: 'ACU (Previous)', data: seasonData.previous.total.map(d=>d.acu), borderColor: 'rgba(56, 189, 248, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
-            { label: 'VIEW (Current)', data: seasonData.current.total.map(d=>d.view), backgroundColor: 'rgba(255, 255, 255, 0.1)', yAxisID: 'y-right' },
-            { label: 'VIEW (Previous)', data: seasonData.previous.total.map(d=>d.view), backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.3)', borderWidth: 1, yAxisID: 'y-right'},
+            { label: 'VIEW (Current)', data: seasonData.current.total.map(d=>d.view), backgroundColor: 'rgba(255, 255, 255, 0.07)', yAxisID: 'y-right', borderRadius: 4 },
+            { label: 'VIEW (Previous)', data: seasonData.previous.total.map(d=>d.view), backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.3)', borderWidth: 1, yAxisID: 'y-right', borderRadius: 4},
         ]},
         options: commonOptions('PCCU / ACU (명)')
     });
@@ -460,16 +473,8 @@ document.addEventListener("DOMContentLoaded", function() {
             </tr>`;
         });
     });
-    new Chart(document.getElementById('krChart'), {
-        type: 'bar', data: { labels: dates, datasets: [
-            { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.kr).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: '#f99e1a', tension: 0.4, yAxisID: 'y-left' },
-            { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map((_, i) => Object.values(seasonData.previous.kr).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: 'rgba(249, 158, 26, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
-            { label: 'VIEW (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.kr).reduce((sum, p) => sum + p[i].view, 0)), backgroundColor: 'rgba(255, 255, 255, 0.1)', yAxisID: 'y-right' },
-        ]},
-        options: commonOptions('PCCU (명)')
-    });
-
-    // 2-3. Global
+   
+    // 2-3. Global & Country
     const globalTbody = document.getElementById('table-body-global');
      dates.forEach((date, i) => {
         globalTbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
@@ -484,13 +489,20 @@ document.addEventListener("DOMContentLoaded", function() {
             </tr>`;
         });
     });
-    new Chart(document.getElementById('globalChart'), {
-        type: 'bar', data: { labels: dates, datasets: [
-            { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.global).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: '#38bdf8', tension: 0.4, yAxisID: 'y-left' },
-            { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map((_, i) => Object.values(seasonData.previous.global).reduce((sum, p) => sum + p[i].pccu, 0)), borderColor: 'rgba(56, 189, 248, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
-            { label: 'VIEW (Current)', data: seasonData.current.total.map((_, i) => Object.values(seasonData.current.global).reduce((sum, p) => sum + p[i].view, 0)), backgroundColor: 'rgba(255, 255, 255, 0.1)', yAxisID: 'y-right' },
-        ]},
-        options: commonOptions('PCCU (명)')
+
+    const countryTbody = document.getElementById('table-body-country');
+    dates.forEach((date, i) => {
+        countryTbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
+        Object.keys(seasonData.current.country).forEach(country => {
+            const current = seasonData.current.country[country][i];
+            const previous = seasonData.previous.country[country][i];
+            countryTbody.innerHTML += `<tr class="sub-row">
+                <td>${country}</td>
+                <td>${formatNumber(current.pccu)}${createDiffSpan(current.pccu, previous.pccu)}</td>
+                <td>${formatNumber(current.acu)}${createDiffSpan(current.acu, previous.acu)}</td>
+                <td>${formatNumber(current.view)}${createDiffSpan(current.view, previous.view)}</td>
+            </tr>`;
+        });
     });
 });
 </script>
