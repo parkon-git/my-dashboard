@@ -65,10 +65,10 @@
             color: var(--text-muted);
             margin-right: 6px;
         }
-        /* [수정됨] 박스 테두리 및 배경 삭제 */
+        /* [수정됨] 박스 테두리/배경 삭제 및 좌측 정렬 */
         .disclaimer-box {
             display: inline-block;
-            text-align: center;
+            text-align: left; /* 좌측 정렬로 변경 */
             margin-top: 10px;
         }
         .disclaimer {
@@ -133,7 +133,7 @@
             margin: 20px 0;
         }
         
-        /* [추가됨] 차트 상단 한줄 요약 스타일 */
+        /* 차트/섹션 상단 한줄 요약 스타일 */
         .chart-summary {
             background-color: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
@@ -143,6 +143,10 @@
             color: var(--text-main);
             font-size: 0.95rem;
             text-align: center;
+        }
+        /* [수정됨] 좌측 정렬용 유틸 클래스 */
+        .text-left {
+            text-align: left !important;
         }
         .chart-summary strong {
             color: var(--point-ow-orange);
@@ -204,6 +208,16 @@
             line-height: 1.5;
             flex: 1;
         }
+        /* [추가됨] 주요 사항 섹션 리스트 스타일 */
+        .info-list {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .info-list li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -219,10 +233,10 @@
             <div class="meta-item"><span class="label">작성일 :</span> <span id="publish-date"></span></div>
             <div class="meta-item"><span class="label">작성자 :</span> 슈터본부 슈터OPS실 브랜딩팀</div>
         </div>
-        <!-- [수정됨] 안내문구 박스 배경색/테두리 스타일 제거 -->
+        <!-- [수정됨] 안내문구 좌측 정렬 -->
         <div class="disclaimer-box">
-            <div class="disclaimer">※ 본 문서는 LLM에 의해 자동으로 생성된 뒤 검토 및 보완되었습니다.</div>
-            <div class="disclaimer">※ 본 문서의 시청 지표는 외부 트래킹 사이트(Esports Chart, 소프트콘 등)의 지표를 기반으로 작성되었고, 실제 지표와는 차이가 있을 수 있습니다.</div>
+            <div class="disclaimer">※ 본 문서는 LLM을 활용하여 생성된 문서이며, 생성 이후 검토 및 보완 진행되었습니다.</div>
+            <div class="disclaimer">※ 본 문서의 시청 지표 중 일부는 외부 트래킹 사이트(Esports Chart, 소프트콘 등)의 지표를 기반으로 작성되었고, 실제 지표와 차이가 있을 수 있습니다.</div>
         </div>
     </header>
 
@@ -251,7 +265,8 @@
         <p><span class="badge negative">부정</span> 2세트 중반 약 3분간 송출 플랫폼 화질 저하 및 버퍼링 이슈 발생.</p>
         <p><strong>특이 사항 :</strong> 없음</p>
         <hr>
-        <p><strong>핵심 요약 :</strong> 전반적인 지표는 이전 시즌 개막전 대비 약 10% 이상 상승하며 성공적인 출발을 보였습니다. 긍정적인 경기력 평가가 주를 이루었으나, 순간적인 플랫폼 버퍼링 이슈에 대한 개선이 필요해 보입니다.</p>
+        <!-- [수정됨] 핵심 요약 이모지 및 색상 적용 (좌측 정렬 유지) -->
+        <p>📌 <strong style="color: var(--point-ow-orange);">핵심 요약 :</strong> 전반적인 지표는 이전 시즌 개막전 대비 약 10% 이상 상승하며 성공적인 출발을 보였습니다. 긍정적인 경기력 평가가 주를 이루었으나, 순간적인 플랫폼 버퍼링 이슈에 대한 개선이 필요해 보입니다.</p>
     </div>
 
     <h2>2. 시청 지표 추이</h2>
@@ -259,24 +274,20 @@
         <div class="card" style="padding: 16px;">
             <div class="title">가장 최근 PCCU</div>
             <div class="value" style="font-size: 1.8rem;" id="recent-pccu">42,150</div>
-            <!-- [수정됨] 증감률 텍스트 추가 -->
             <div class="desc" id="recent-desc-pccu">전일 대비 ▲ 12.4%</div>
         </div>
         <div class="card" style="padding: 16px;">
             <div class="title">가장 최근 ACU</div>
             <div class="value" style="font-size: 1.8rem;" id="recent-acu">28,400</div>
-            <!-- [수정됨] 증감률 텍스트 추가 -->
             <div class="desc" id="recent-desc-acu">전일 대비 ▲ 8.2%</div>
         </div>
         <div class="card" style="padding: 16px;">
             <div class="title">가장 최근 VIEW</div>
             <div class="value" style="font-size: 1.8rem;" id="recent-view">1,205,000</div>
-            <!-- [수정됨] 증감률 텍스트 추가 -->
             <div class="desc" id="recent-desc-view">전일 대비 ▲ 15.1%</div>
         </div>
     </div>
 
-    <!-- [추가됨] 시청 지표 추이에 대한 한 줄 요약 박스 -->
     <div class="chart-summary">
         📌 <strong>일자별 시청 지표 요약:</strong> 대회 개막 이후 꾸준한 상승 곡선을 그리고 있으며, 특히 누적 조회수(VIEW)의 증가폭이 가장 두드러집니다.
     </div>
@@ -334,7 +345,32 @@
         </tbody>
     </table>
 
-    <h2>3. 유저 동향</h2>
+    <!-- [추가됨] 3. 주요 사항 섹션 신설 -->
+    <h2>3. 주요 사항</h2>
+    <div class="chart-summary text-left">
+        📌 <strong>주요 사항 요약:</strong> 개막전 2경기 모두 성공적으로 마무리되었으며, 2세트 중 발생한 플랫폼 이슈는 원인 파악 중입니다.
+    </div>
+    <div class="grid-cards" style="grid-template-columns: 1fr;">
+        <div class="card text-left" style="padding: 24px;">
+            <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--point-blue);">📊 경기 결과 (개막전)</h3>
+            <ul class="info-list">
+                <li><strong>1경기:</strong> Team A ( 3 ) vs ( 1 ) Team B - Team A 승리</li>
+                <li><strong>2경기:</strong> Team C ( 0 ) vs ( 3 ) Team D - Team D 승리</li>
+            </ul>
+            
+            <h3 style="margin-top: 24px; font-size: 1.1rem; color: var(--point-red);">⚠️ 진행 간 이슈 사항</h3>
+            <ul class="info-list">
+                <li>2세트 진행 중 외부 송출 플랫폼(치지직/아프리카TV) 양측에서 순간적인 화질 저하 및 버퍼링 발생 (약 3분간)</li>
+                <li>현재 플랫폼 엔지니어 팀과 원인 파악 및 회선 안정화 작업 진행 중</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- [수정됨] 4. 유저 동향 (넘버링 변경 및 요약 추가) -->
+    <h2>4. 유저 동향</h2>
+    <div class="chart-summary text-left">
+        📌 <strong>유저 동향 요약:</strong> 뛰어난 경기력과 역전극에 대한 긍정적 반응이 주를 이루나, 시청 환경 안정성에 대한 피드백이 존재합니다.
+    </div>
     <div class="trend-item">
         <span class="badge positive">POSITIVE</span>
         <p>선수들의 수준 높은 경기력과 예측 불가능한 한타 구도에 대한 찬사가 많았습니다. 특히 3세트 역전승 구간에서 커뮤니티 언급량이 당일 최고치를 기록하며 코어 팬층의 높은 몰입도를 보여주었습니다.</p>
@@ -357,7 +393,6 @@
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     document.getElementById('publish-date').innerText = formattedDate;
 
-    // [수정됨] 일자별 데이터로 변경 및 VIEW 데이터 추가
     let chartLabels = ['2024-03-01', '2024-03-02', '2024-03-03', '2024-03-04', '2024-03-05'];
     let pccuData = [35000, 38200, 42150, 45000, 46800];
     let acuData = [24000, 26100, 28400, 31200, 32500];
@@ -367,50 +402,40 @@
         const ctx = document.getElementById('trendChart').getContext('2d');
         
         new Chart(ctx, {
-            // 복합 차트(Line + Bar)를 위해 기본 타입은 Line으로 둠
-            type: 'line', 
+            type: 'bar', // [수정됨] 기본 베이스를 막대(bar)로 설정
             data: {
                 labels: chartLabels,
                 datasets: [
-                    // VIEW는 막대 그래프로 배경처럼 표시 (우측 Y축 사용)
+                    // [수정됨] VIEW는 꺾은선(Line) 그래프로 변경
                     {
-                        type: 'bar',
+                        type: 'line',
                         label: 'VIEW 누적 조회수',
                         data: viewData,
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)', // 튀지 않는 은은한 색상
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderWidth: 1,
-                        borderRadius: 4,
-                        yAxisID: 'y-view' // 별도의 스케일(축) 설정
+                        borderColor: '#ffffff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#ffffff',
+                        pointRadius: 4,
+                        tension: 0.4,
+                        yAxisID: 'y-view'
                     },
-                    // PCCU는 영역을 채우는 선 그래프 (좌측 Y축 사용)
+                    // [수정됨] PCCU는 막대(Bar) 그래프로 변경
                     {
-                        type: 'line',
+                        type: 'bar',
                         label: 'PCCU',
                         data: pccuData,
-                        borderColor: '#f99e1a',
-                        backgroundColor: 'rgba(249, 158, 26, 0.1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#f99e1a',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        fill: true,
-                        tension: 0.4,
+                        backgroundColor: 'rgba(249, 158, 26, 0.8)', // 포인트 오렌지
+                        borderRadius: 4,
                         yAxisID: 'y-viewers'
                     },
-                    // ACU는 점선 그래프 (좌측 Y축 사용)
+                    // [수정됨] ACU는 막대(Bar) 그래프로 변경
                     {
-                        type: 'line',
+                        type: 'bar',
                         label: 'ACU',
                         data: acuData,
-                        borderColor: '#60a5fa',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#60a5fa',
-                        pointRadius: 4,
-                        borderDash: [5, 5],
-                        tension: 0.4,
+                        backgroundColor: 'rgba(96, 165, 250, 0.8)', // 포인트 블루
+                        borderRadius: 4,
                         yAxisID: 'y-viewers'
                     }
                 ]
@@ -428,7 +453,6 @@
                     },
                     tooltip: {
                         callbacks: {
-                            // 천 단위 콤마 찍기
                             label: function(context) {
                                 let label = context.dataset.label || '';
                                 if (label) {
@@ -447,7 +471,6 @@
                         grid: { color: '#2d333b' },
                         ticks: { color: '#9ca3af', font: { family: 'Pretendard' } }
                     },
-                    // 좌측 Y축: PCCU와 ACU용
                     'y-viewers': {
                         type: 'linear',
                         display: true,
@@ -460,12 +483,11 @@
                             color: '#9ca3af'
                         }
                     },
-                    // 우측 Y축: VIEW(누적 조회수)용 (단위가 매우 크기 때문)
                     'y-view': {
                         type: 'linear',
                         display: true,
                         position: 'right',
-                        grid: { drawOnChartArea: false }, // 좌측 축의 그리드와 겹치지 않게 선을 그리지 않음
+                        grid: { drawOnChartArea: false },
                         ticks: { color: '#9ca3af', font: { family: 'Pretendard' } },
                         title: {
                             display: true,
