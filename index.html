@@ -9,9 +9,7 @@
     <style>
         :root {
             --bg-main: #121418;
-            /* [수정됨] 카드/박스 배경색을 더 어둡게 변경 */
             --bg-card: #1A1D24;
-            /* [수정됨] 테두리색을 더 어둡게 변경 */
             --border-color: #252932;
             --text-main: #e5e7eb;
             --text-muted: #9ca3af;
@@ -83,12 +81,12 @@
         }
         
         /* 본문 공통 */
-        h2 {
-            font-size: 1.3rem;
-            margin-top: 40px;
-            margin-bottom: 20px;
+        h2, h3 {
             color: #ffffff;
         }
+        h2 { font-size: 1.3rem; margin-top: 40px; margin-bottom: 20px; }
+        h3 { font-size: 1.1rem; margin-top: 30px; margin-bottom: 16px; }
+
         .grid-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -142,7 +140,7 @@
         
         /* 차트/섹션 상단 한줄 요약 스타일 */
         .chart-summary {
-            background-color: var(--bg-card); /* 더 어둡게 변경 */
+            background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 14px 20px;
@@ -249,8 +247,8 @@
             <div class="meta-item"><span class="label">작성자 :</span> 슈터본부 슈터OPS실 브랜딩팀</div>
         </div>
         <div class="disclaimer-box">
-            <div class="disclaimer">※ 본 문서는 LLM에 의해 자동으로 생성된 뒤 검토 및 보완되었습니다.</div>
-            <div class="disclaimer">※ 본 문서의 시청 지표는 외부 트래킹 사이트(Esports Chart, 소프트콘 등)의 지표를 기반으로 작성되었고, 실제 지표와는 차이가 있을 수 있습니다.</div>
+            <div class="disclaimer">※ LLM을 활용하여 1차 가공한 내용을 검토 및 보완했습니다.</div>
+            <div class="disclaimer">※ 일부 지표는 외부 트래킹 사이트(Esports Chart, 소프트콘 등)를 기반으로 작성되었고, 실제 지표와는 차이가 있을 수 있습니다.</div>
         </div>
     </header>
 
@@ -282,7 +280,11 @@
         <p>📌 <strong style="color: var(--point-ow-orange);">핵심 요약 :</strong> 전반적인 지표는 이전 시즌 개막전 대비 약 10% 이상 상승하며 성공적인 출발을 보였습니다. 긍정적인 경기력 평가가 주를 이루었으나, 순간적인 플랫폼 버퍼링 이슈에 대한 개선이 필요해 보입니다.</p>
     </div>
 
+    <!-- ==================== 2. 시청 지표 추이 (구조 변경) ==================== -->
     <h2>2. 시청 지표 추이</h2>
+
+    <!-- 2-1. 전체 시청 지표 -->
+    <h3>2-1. 전체 시청 지표</h3>
     <div class="grid-cards" style="grid-template-columns: repeat(3, 1fr);">
         <div class="card" style="padding: 16px;">
             <div class="title">가장 최근 PCCU</div>
@@ -300,17 +302,14 @@
             <div class="desc" id="recent-desc-view">전 시즌 대비 ▲ 15.1%</div>
         </div>
     </div>
-
     <div class="chart-summary text-left">
         📌 <strong>일자별 시청 지표 요약:</strong> 대회 개막 이후 꾸준한 상승 곡선을 그리고 있으며, 특히 누적 조회수(VIEW)의 증가폭이 가장 두드러집니다.
     </div>
-
     <div class="chart-container">
         <div class="canvas-wrapper">
             <canvas id="trendChart"></canvas>
         </div>
     </div>
-
     <table>
         <thead>
             <tr>
@@ -360,6 +359,7 @@
         </tbody>
     </table>
 
+    <!-- ==================== 기존 3, 4번 섹션 유지 ==================== -->
     <h2>3. 주요 사항</h2>
     <div class="chart-summary text-left">
         📌 <strong>주요 사항 요약:</strong> 개막전 2경기 모두 성공적으로 마무리되었으며, 2세트 중 발생한 플랫폼 이슈는 원인 파악 중입니다.
