@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OWCS 개막전 일일 보고서</title>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- [수정됨] 오류 방지를 위해 명확한 Chart.js 버전 번들이 포함된 CDN으로 변경 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.js"></script>
     <style>
         :root {
             --bg-main: #121418;
@@ -14,7 +15,7 @@
             --text-main: #e5e7eb;
             --text-muted: #9ca3af;
             --point-ow-orange: #f99e1a; 
-            --point-blue: #38bdf8; /* 스카이블루 계열로 조금 더 밝게 변경 */
+            --point-blue: #38bdf8; 
             --point-red: #ef4444;
             --point-yellow: #f59e0b;
         }
@@ -176,8 +177,20 @@
             border-radius: 10px;
             padding: 24px;
             margin-top: 20px;
-            height: 420px; /* 차트 영역 살짝 넓힘 */
+            height: 420px;
+            /* [추가됨] 캔버스 붕괴 현상 방지용 속성 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        
+        /* [추가됨] 캔버스를 감싸는 내부 래퍼 설정 (렌더링 안정성 확보) */
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -289,13 +302,15 @@
         </div>
     </div>
 
-    <!-- [수정됨] 일자별 시청 지표 요약 좌측 정렬 -->
     <div class="chart-summary text-left">
         📌 <strong>일자별 시청 지표 요약:</strong> 대회 개막 이후 꾸준한 상승 곡선을 그리고 있으며, 특히 누적 조회수(VIEW)의 증가폭이 가장 두드러집니다.
     </div>
 
     <div class="chart-container">
-        <canvas id="trendChart"></canvas>
+        <!-- [수정됨] 캔버스 사이즈가 0으로 붕괴되지 않도록 래퍼 요소 추가 -->
+        <div class="canvas-wrapper">
+            <canvas id="trendChart"></canvas>
+        </div>
     </div>
 
     <table>
@@ -397,15 +412,14 @@
     let acuData = [24000, 26100, 28400, 31200, 32500];
     let viewData = [950000, 1050000, 1205000, 1420000, 1650000]; 
 
-    function renderChart() {
+    // [수정됨] 스크립트 실행 오류 방지를 위해 렌더링 함수를 DOM 로드 후 실행하도록 보완
+    document.addEventListener("DOMContentLoaded", function() {
         const ctx = document.getElementById('trendChart').getContext('2d');
         
-        // 1. VIEW(막대)용 그라데이션 (스카이블루)
         const viewGradient = ctx.createLinearGradient(0, 0, 0, 400);
-        viewGradient.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); // 상단 진하게
-        viewGradient.addColorStop(1, 'rgba(56, 189, 248, 0.1)'); // 하단 투명하게
+        viewGradient.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); 
+        viewGradient.addColorStop(1, 'rgba(56, 189, 248, 0.1)');
 
-        // 2. PCCU(꺾은선 영역)용 은은한 오렌지 그라데이션
         const pccuFillGradient = ctx.createLinearGradient(0, 0, 0, 400);
         pccuFillGradient.addColorStop(0, 'rgba(249, 158, 26, 0.3)');
         pccuFillGradient.addColorStop(1, 'rgba(249, 158, 26, 0.0)');
@@ -415,46 +429,43 @@
             data: {
                 labels: chartLabels,
                 datasets: [
-                    // VIEW 누적조회수 (Background Bar 역할)
                     {
                         type: 'bar',
                         label: 'VIEW 누적 조회수',
                         data: viewData,
                         backgroundColor: viewGradient,
-                        borderRadius: 6, // 둥근 모서리 적용
-                        barPercentage: 0.6, // 막대 너비 조절
+                        borderRadius: 6, 
+                        barPercentage: 0.6, 
                         yAxisID: 'y-view'
                     },
-                    // PCCU (Main Line 역할)
                     {
                         type: 'line',
                         label: 'PCCU',
                         data: pccuData,
-                        borderColor: '#f99e1a', // 주황색
-                        backgroundColor: pccuFillGradient, // 아래 영역 은은하게 채우기
-                        borderWidth: 3, // 선 두께 약간 두껍게
+                        borderColor: '#f99e1a', 
+                        backgroundColor: pccuFillGradient, 
+                        borderWidth: 3, 
                         pointBackgroundColor: '#1e222b',
                         pointBorderColor: '#f99e1a',
                         pointBorderWidth: 2,
-                        pointRadius: 5, // 포인트 크기
+                        pointRadius: 5, 
                         pointHoverRadius: 7,
-                        fill: true, // 그라데이션 채우기 활성화
-                        tension: 0.4, // 부드러운 곡선
+                        fill: true, 
+                        tension: 0.4, 
                         yAxisID: 'y-viewers'
                     },
-                    // ACU (Sub Line 역할)
                     {
                         type: 'line',
                         label: 'ACU',
                         data: acuData,
-                        borderColor: '#9ca3af', // 회색
+                        borderColor: '#9ca3af', 
                         borderWidth: 2,
                         pointBackgroundColor: '#1e222b',
                         pointBorderColor: '#9ca3af',
                         pointBorderWidth: 2,
                         pointRadius: 4,
-                        borderDash: [5, 5], // 점선 처리
-                        tension: 0.4, // 부드러운 곡선
+                        borderDash: [5, 5], 
+                        tension: 0.4, 
                         yAxisID: 'y-viewers'
                     }
                 ]
@@ -472,7 +483,7 @@
                         labels: { 
                             color: '#e5e7eb', 
                             font: { family: 'Pretendard', size: 12 },
-                            usePointStyle: true, // 범례 아이콘을 동그랗게
+                            usePointStyle: true, 
                             padding: 20
                         }
                     },
@@ -499,7 +510,7 @@
                 },
                 scales: {
                     x: {
-                        grid: { display: false }, // 세로선(X축 그리드) 숨겨서 깔끔하게
+                        grid: { display: false }, 
                         ticks: { color: '#9ca3af', font: { family: 'Pretendard' }, padding: 10 }
                     },
                     'y-viewers': {
@@ -507,8 +518,38 @@
                         display: true,
                         position: 'left',
                         grid: { 
-                            color: 'rgba(255, 255, 255, 0.05)', // 은은한 가로선
-                            drawBorder: false
+                            color: 'rgba(255, 255, 255, 0.05)'
                         },
+                        border: { display: false }, // [수정됨] 최신 Chart.js 버전에 맞춘 테두리 숨김 속성
                         ticks: { color: '#9ca3af', font: { family: 'Pretendard' }, padding: 10 },
-                    
+                        title: {
+                            display: true,
+                            text: '동시 시청자 (명)',
+                            color: '#9ca3af',
+                            font: { size: 11 }
+                        },
+                        suggestedMin: 0 
+                    },
+                    'y-view': {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false }, 
+                        border: { display: false },
+                        ticks: { color: '#38bdf8', font: { family: 'Pretendard' }, padding: 10 }, 
+                        title: {
+                            display: true,
+                            text: '누적 조회수 (회)',
+                            color: '#38bdf8',
+                            font: { size: 11 }
+                        },
+                        suggestedMin: 0
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
