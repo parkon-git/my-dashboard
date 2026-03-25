@@ -13,10 +13,10 @@
             --border-color: #252932;
             --text-main: #e5e7eb;
             --text-muted: #9ca3af;
-            /* [수정됨] THE FINALS 키컬러(레드)로 변경 */
             --point-red-key: #F94242; 
-            --point-blue: #38bdf8; /* 하락 */
-            --point-red-badge: #ef4444; /* 뱃지용 톤 다운 레드 */
+            --point-red-light: #ff7070;
+            --point-blue: #38bdf8; 
+            --point-red-badge: #ef4444;
             --point-yellow: #f59e0b;
         }
         body {
@@ -33,7 +33,6 @@
             padding: 40px 20px;
         }
         
-        /* 헤더 영역 */
         .report-header {
             text-align: center;
             margin-bottom: 40px;
@@ -78,12 +77,8 @@
             margin-bottom: 6px;
         }
         
-        /* 본문 공통 */
-        h2, h3 {
-            color: #ffffff;
-        }
-        h2 { font-size: 1.3rem; margin-top: 40px; margin-bottom: 20px; }
-        h3 { font-size: 1.1rem; margin-top: 30px; margin-bottom: 16px; border-top: 1px solid var(--border-color); padding-top: 30px;}
+        h2 { font-size: 1.3rem; margin-top: 40px; margin-bottom: 20px; color: var(--point-red-key); }
+        h3 { font-size: 1.1rem; margin-top: 30px; margin-bottom: 16px; border-top: 1px solid var(--border-color); padding-top: 30px; color: #ffffff;}
 
         .grid-cards {
             display: grid;
@@ -112,6 +107,7 @@
         .card .desc {
             font-size: 0.9rem;
             font-weight: 500;
+            color: var(--text-main);
         }
         
         .summary-box {
@@ -132,10 +128,8 @@
             margin: 10px 0 20px 0;
             color: var(--text-main);
             font-size: 0.95rem;
-            text-align: center;
+            text-align: left;
         }
-        .text-left { text-align: left !important; }
-        .chart-summary strong { color: var(--point-red-key); }
 
         .badge {
             display: inline-block;
@@ -193,7 +187,7 @@
             padding-left: 32px;
         }
 
-        .diff { font-size: 0.85em; margin-left: 8px; font-weight: 500; }
+        .diff { font-size: 0.85em; margin-left: 8px; font-weight: 600; }
         .diff.up { color: var(--point-red-key); }
         .diff.down { color: var(--point-blue); }
 
@@ -232,26 +226,26 @@
         <div class="card">
             <div class="title">PCCU (최고 동시 시청자)</div>
             <div class="value">42,150</div>
-            <div class="desc diff up">전 시즌 대비 ▲ 12.4%</div>
+            <div class="desc">전 시즌 대비 <span class="diff up">▲ 12.4%</span></div>
         </div>
         <div class="card">
             <div class="title">ACU (평균 동시 시청자)</div>
             <div class="value">28,400</div>
-            <div class="desc diff up">▲ 8.2%</div>
+            <div class="desc">전 시즌 대비 <span class="diff up">▲ 8.2%</span></div>
         </div>
         <div class="card">
             <div class="title">VIEW (누적 조회수)</div>
             <div class="value">1,205,000</div>
-            <div class="desc diff up">▲ 15.1%</div>
+            <div class="desc">전 시즌 대비 <span class="diff up">▲ 15.1%</span></div>
         </div>
     </div>
     <div class="summary-box">
-        <p><span class="badge positive">긍정</span> 개막전 매치업에 대한 기대감으로 방송 시작 직후 트래픽이 크게 상승함.</p>
-        <p><span class="badge mixed">혼합</span> 특정 세트 진행 중 메타 고착화에 대한 시청자들의 지루함 언급이 있었음.</p>
-        <p><span class="badge negative">부정</span> 2세트 중반 약 3분간 송출 플랫폼 화질 저하 및 버퍼링 이슈 발생.</p>
+        <p>📌 개막전 매치업에 대한 기대감으로 방송 시작 직후 트래픽이 크게 상승함.</p>
+        <p>📌 특정 세트 진행 중 메타 고착화에 대한 시청자들의 지루함 언급이 있었음.</p>
+        <p>📌 2세트 중반 약 3분간 송출 플랫폼 화질 저하 및 버퍼링 이슈 발생.</p>
         <p><strong>특이 사항 :</strong> 없음</p>
         <hr>
-        <p>📌 <strong style="color: var(--point-red-key);">핵심 요약 :</strong> 전반적인 지표는 이전 시즌 개막전 대비 약 10% 이상 상승하며 성공적인 출발을 보였습니다. 긍정적인 경기력 평가가 주를 이루었으나, 순간적인 플랫폼 버퍼링 이슈에 대한 개선이 필요해 보입니다.</p>
+        <p>📌 전반적인 지표는 이전 시즌 개막전 대비 약 10% 이상 상승하며 성공적인 출발을 보였습니다. 긍정적인 경기력 평가가 주를 이루었으나, 순간적인 플랫폼 버퍼링 이슈에 대한 개선이 필요해 보입니다.</p>
     </div>
 
     <!-- ==================== 2. 시청 지표 추이 ==================== -->
@@ -263,21 +257,21 @@
         <div class="card" style="padding: 16px;">
             <div class="title">최고 PCCU</div>
             <div class="value" style="font-size: 1.8rem;">46,800</div>
-            <div class="desc diff up">전 시즌 대비 ▲ 12.8%</div>
+            <div class="desc">전 시즌 대비 <span class="diff up">▲ 12.8%</span></div>
         </div>
         <div class="card" style="padding: 16px;">
             <div class="title">최고 ACU</div>
             <div class="value" style="font-size: 1.8rem;">32,500</div>
-            <div class="desc diff up">전 시즌 대비 ▲ 12.1%</div>
+            <div class="desc">전 시즌 대비 <span class="diff up">▲ 12.1%</span></div>
         </div>
         <div class="card" style="padding: 16px;">
             <div class="title">총 VIEW</div>
             <div class="value" style="font-size: 1.8rem;">1,650,000</div>
-            <div class="desc diff up">전 시즌 대비 ▲ 22.2%</div>
+            <div class="desc">전 시즌 대비 <span class="diff up">▲ 22.2%</span></div>
         </div>
     </div>
     <div class="chart-summary text-left">
-        📌 <strong>일자별 시청 지표 요약:</strong> 모든 핵심 지표(PCCU, ACU, VIEW)에서 전 시즌 대비 꾸준한 상승세를 보이고 있으며, 특히 개막 3일차에 시청자가 가장 높게 집계되었습니다.
+        📌 모든 핵심 지표(PCCU, ACU, VIEW)에서 전 시즌 대비 꾸준한 상승세를 보이고 있으며, 특히 개막 3일차에 시청자가 가장 높게 집계되었습니다.
     </div>
     <div class="chart-container">
         <div class="canvas-wrapper">
@@ -299,7 +293,7 @@
     <!-- 2-2. 한국 시청 지표 -->
     <h3>2-2. 한국 시청 지표</h3>
     <div class="chart-summary text-left">
-        📌 <strong>한국 지역 요약:</strong> 치지직(CHZZK) 플랫폼의 성장이 두드러지며 국내 시청 지표 상승을 주도했습니다. SOOP(구 아프리카TV)은 코어 팬덤 기반의 안정적인 수치를 유지했습니다.
+        📌 치지직(CHZZK) 플랫폼의 성장이 두드러지며 국내 시청 지표 상승을 주도했습니다. SOOP(구 아프리카TV)은 코어 팬덤 기반의 안정적인 수치를 유지했습니다.
     </div>
      <table>
         <thead>
@@ -316,7 +310,7 @@
     <!-- 2-3. 글로벌 시청 지표 -->
     <h3>2-3. 글로벌 시청 지표</h3>
     <div class="chart-summary text-left">
-        📌 <strong>글로벌 지역 요약:</strong> 영어권 YouTube 채널의 PCCU가 크게 상승하며 글로벌 흥행을 견인했습니다. 일본 지역은 전 시즌과 비슷한 수준을 유지했습니다.
+        📌 영어권 YouTube 채널의 PCCU가 크게 상승하며 글로벌 흥행을 견인했습니다. 일본 지역은 전 시즌과 비슷한 수준을 유지했습니다.
     </div>
     <table>
         <thead>
@@ -333,7 +327,7 @@
     <!-- ==================== 기존 3, 4번 섹션 유지 ==================== -->
     <h2>3. 주요 사항</h2>
     <div class="chart-summary text-left">
-        📌 <strong>주요 사항 요약:</strong> 개막전 2경기 모두 성공적으로 마무리되었으며, 2세트 중 발생한 플랫폼 이슈는 원인 파악 중입니다.
+        📌 개막전 2경기 모두 성공적으로 마무리되었으며, 2세트 중 발생한 플랫폼 이슈는 원인 파악 중입니다.
     </div>
     <div class="grid-cards" style="grid-template-columns: 1fr;">
         <div class="card text-left" style="padding: 24px;">
@@ -352,7 +346,7 @@
 
     <h2>4. 유저 동향</h2>
     <div class="chart-summary text-left">
-        📌 <strong>유저 동향 요약:</strong> 뛰어난 경기력과 역전극에 대한 긍정적 반응이 주를 이루나, 시청 환경 안정성에 대한 피드백이 존재합니다.
+        📌 뛰어난 경기력과 역전극에 대한 긍정적 반응이 주를 이루나, 시청 환경 안정성에 대한 피드백이 존재합니다.
     </div>
     <div class="trend-item">
         <span class="badge positive">긍정</span>
@@ -370,10 +364,6 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-
-    const now = new Date();
-    // [수정됨] 날짜 표시 삭제
-    // document.getElementById('publish-date').innerText = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     const formatNumber = (num) => new Intl.NumberFormat('ko-KR').format(num);
     const createDiffSpan = (current, previous) => {
@@ -418,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // --- Chart & Table Rendering ---
     const commonOptions = (yAxisLabel) => ({
         responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { display: true, labels: { color: '#e5e7eb' }}}, // 범례 다시 표시
+        plugins: { legend: { labels: { color: '#e5e7eb', usePointStyle: true }}},
         scales: {
             x: { grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' } },
             'y-left': { position: 'left', grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' }, title: { display: true, text: yAxisLabel, color: '#9ca3af' }},
@@ -442,11 +432,11 @@ document.addEventListener("DOMContentLoaded", function() {
     new Chart(document.getElementById('trendChart'), {
         type: 'bar', data: { labels: dates, datasets: [
             { type: 'line', label: 'PCCU (Current)', data: seasonData.current.total.map(d=>d.pccu), borderColor: 'var(--point-red-key)', tension: 0.4, yAxisID: 'y-left', pointStyle: 'rectRot', pointRadius: 5, borderWidth: 2.5 },
-            { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map(d=>d.pccu), borderColor: 'rgba(249, 66, 66, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
-            { type: 'line', label: 'ACU (Current)', data: seasonData.current.total.map(d=>d.acu), borderColor: '#818cf8', tension: 0.4, yAxisID: 'y-left' },
-            { type: 'line', label: 'ACU (Previous)', data: seasonData.previous.total.map(d=>d.acu), borderColor: 'rgba(129, 140, 248, 0.4)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
-            { label: 'VIEW (Current)', data: seasonData.current.total.map(d=>d.view), backgroundColor: 'rgba(255, 255, 255, 0.07)', yAxisID: 'y-right', borderRadius: 4 },
-            { label: 'VIEW (Previous)', data: seasonData.previous.total.map(d=>d.view), backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.3)', borderWidth: 1, yAxisID: 'y-right', borderRadius: 4},
+            { type: 'line', label: 'ACU (Current)', data: seasonData.current.total.map(d=>d.acu), borderColor: 'var(--point-red-light)', tension: 0.4, yAxisID: 'y-left' },
+            { label: 'VIEW (Current)', data: seasonData.current.total.map(d=>d.view), backgroundColor: 'rgba(249, 66, 66, 0.15)', yAxisID: 'y-right', borderRadius: 4 },
+            { type: 'line', label: 'PCCU (Previous)', data: seasonData.previous.total.map(d=>d.pccu), borderColor: 'rgba(156, 163, 175, 0.6)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left' },
+            { type: 'line', label: 'ACU (Previous)', data: seasonData.previous.total.map(d=>d.acu), borderColor: 'rgba(156, 163, 175, 0.6)', borderDash:[5,5], tension: 0.4, yAxisID: 'y-left', pointStyle: 'dash' },
+            { label: 'VIEW (Previous)', data: seasonData.previous.total.map(d=>d.view), backgroundColor: 'transparent', borderColor: 'rgba(156, 163, 175, 0.6)', borderWidth: 1, yAxisID: 'y-right', borderRadius: 4},
         ]},
         options: commonOptions('PCCU / ACU (명)')
     });
