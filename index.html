@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 TFAS CIRCUIT 1 일일 리포트</title>
+    <title>TFAS CIRCUIT 일일 리포트</title>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -13,524 +13,675 @@
             --border-color: #252932;
             --text-main: #e5e7eb;
             --text-muted: #9ca3af;
-            --point-red-key: #F94242; 
+            --point-red-key: #F94242;
             --point-red-light: #ff7070;
-            --point-blue: #38bdf8; 
+            --point-blue: #38bdf8;
             --point-red-badge: #ef4444;
             --point-yellow: #f59e0b;
         }
+        * { box-sizing: border-box; }
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg-main);
             color: var(--text-main);
             font-family: 'Pretendard', -apple-system, sans-serif;
             line-height: 1.6;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        /* ── 로딩 오버레이 ── */
+        #loading-overlay {
+            position: fixed; inset: 0;
+            background: var(--bg-main);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999; gap: 20px;
         }
-        
+        #loading-overlay.hidden { display: none; }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--point-red-key);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading-text { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* ── 에러 배너 ── */
+        #error-banner {
+            display: none;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid var(--point-red-key);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            color: #fca5a5;
+            font-size: 0.9rem;
+        }
+        #error-banner.show { display: block; }
+
+        /* ── 헤더 ── */
         .report-header {
             text-align: center;
             margin-bottom: 40px;
             padding-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
         }
-        .eyebrow {
-            color: var(--point-red-key);
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-        h1 {
-            font-size: 2.4rem;
-            font-weight: 800;
-            margin-top: 0;
-            margin-bottom: 24px;
-            color: #ffffff;
-        }
-        .metadata {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin-bottom: 24px;
-            font-size: 0.95rem;
-            color: #d1d5db;
-            flex-wrap: wrap;
-        }
-        .meta-item span.label {
-            color: var(--text-muted);
-            margin-right: 6px;
-        }
-        .disclaimer-box {
-            display: inline-block;
-            text-align: left;
-            margin-top: 10px;
-        }
-        .disclaimer {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        
-        h2 { font-size: 1.3rem; margin-top: 40px; margin-bottom: 20px; color: var(--point-red-key); }
-        h3 { font-size: 1.1rem; margin-top: 30px; margin-bottom: 16px; border-top: 1px solid var(--border-color); padding-top: 30px; color: #ffffff;}
+        .eyebrow { color: var(--point-red-key); font-weight: 700; font-size: 1rem; margin-bottom: 12px; letter-spacing: 0.5px; }
+        h1 { font-size: 2.4rem; font-weight: 800; margin: 0 0 24px; color: #fff; }
+        .metadata { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; font-size: 0.95rem; color: #d1d5db; flex-wrap: wrap; }
+        .meta-item span.label { color: var(--text-muted); margin-right: 6px; }
+        .disclaimer { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
 
-        .grid-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 24px;
-            text-align: center;
-        }
-        .card .title {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-        .card .value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 8px;
-        }
-        .card .desc {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        
+        h2 { font-size: 1.3rem; margin-top: 40px; margin-bottom: 20px; color: var(--point-red-key); }
+        h3 { font-size: 1.1rem; margin-top: 30px; margin-bottom: 16px; border-top: 1px solid var(--border-color); padding-top: 30px; color: #fff; }
+
+        /* ── 카드 ── */
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; text-align: center; }
+        .card .title { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
+        .card .value { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .card .value.sm { font-size: 1.8rem; }
+        .card .desc { font-size: 0.8rem; color: var(--text-muted); }
+        .diff { font-size: 1.1em; margin-left: 8px; font-weight: 700; }
+        .diff.up { color: var(--point-red-key); }
+        .diff.down { color: var(--point-blue); }
+        .desc-muted { color: var(--text-muted) !important; font-size: 0.85em !important; font-weight: 400 !important; }
+
+        /* ── 요약박스 ── */
         .summary-box {
             background-color: var(--bg-card);
             border-left: 4px solid var(--point-red-key);
-            padding: 24px;
-            border-radius: 4px;
-            margin-top: 20px;
+            padding: 24px; border-radius: 4px; margin-top: 20px;
         }
         .summary-box p { margin: 8px 0; font-size: 0.95rem; }
         .summary-box hr { border: 0; border-top: 1px solid var(--border-color); margin: 20px 0; }
-        
+        .summary-box ul { margin: 0 0 8px; padding-left: 24px; }
+        .summary-box li { margin-bottom: 6px; font-size: 0.95rem; }
+
+        /* ── 차트 요약 ── */
         .chart-summary {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 14px 20px;
-            margin: 10px 0 20px 0;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            text-align: left;
+            padding: 14px 20px; margin: 10px 0 20px;
+            font-size: 0.95rem; text-align: left;
         }
+        /* LLM 생성 텍스트 로딩 상태 */
+        .llm-loading { color: var(--text-muted); font-style: italic; }
+        .llm-loading::after { content: '…'; animation: dots 1.2s steps(3,end) infinite; }
+        @keyframes dots { 0%,100% { content: '.'; } 33% { content: '..'; } 66% { content: '...'; } }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-right: 10px;
-        }
-        .badge.positive { background-color: rgba(239, 68, 68, 0.15); color: var(--point-red-badge); }
-        .badge.mixed { background-color: rgba(245, 158, 11, 0.15); color: var(--point-yellow); }
-        .badge.negative { background-color: rgba(56, 189, 248, 0.15); color: var(--point-blue); }
-        
+        /* ── 차트 ── */
         .chart-container {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 24px;
-            margin-top: 20px;
-            height: 420px;
-            display: block; 
-            position: relative;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: var(--bg-card);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        th, td {
-            padding: 14px 16px;
-            text-align: center; /* 기본 정렬: 가운데 */
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        th {
-            background-color: rgba(0,0,0,0.2);
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-        
-        /* [수정됨] 2-2, 2-3의 날짜 바(Bar)는 무조건 왼쪽 정렬 */
-        .group-header-row td {
-            background-color: rgba(255, 255, 255, 0.05);
-            font-weight: 600;
-            color: var(--text-main);
-            text-align: left !important;
-        }
-        
-        /* [수정됨] 2-1 전체 지표의 데이터 행(전체 가운데 정렬)을 위한 전용 클래스 */
-        .total-data-row td {
-            text-align: center !important;
+            border-radius: 10px; padding: 24px;
+            margin-top: 20px; height: 420px; position: relative;
         }
 
-        .card .diff { font-size: 1.1em; margin-left: 8px; font-weight: 700; }
-        .card .diff.up { color: var(--point-red-key); }
-        .card .diff.down { color: var(--point-blue); }
-
-        .table-diff { font-size: 0.85em; margin-left: 8px; font-weight: 400; }
+        /* ── 테이블 ── */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: var(--bg-card); border-radius: 10px; overflow: hidden; }
+        th, td { padding: 14px 16px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
+        th { background-color: rgba(0,0,0,0.2); color: var(--text-muted); font-weight: 500; }
+        .group-header-row td { background-color: rgba(255,255,255,0.05); font-weight: 600; color: var(--text-main); text-align: left !important; }
+        .table-diff { font-size: 0.85em; margin-left: 6px; font-weight: 400; }
         .table-diff.up { color: var(--point-red-key); }
         .table-diff.down { color: var(--point-blue); }
-        
-        .desc-muted { color: var(--text-muted) !important; font-size: 0.85em !important; font-weight: 400 !important; }
+        .highlight-red { color: var(--point-red-key); font-weight: 700; }
+        .text-left { text-align: left !important; }
 
+        /* ── 트렌드 아이템 ── */
         .trend-item {
-            display: flex;
-            align-items: flex-start;
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 12px;
+            padding: 20px; border-radius: 8px; margin-bottom: 12px;
         }
-        .trend-item p { margin: 0; font-size: 0.95rem; line-height: 1.5; flex: 1; }
-        .info-list { margin: 10px 0 0 0; padding-left: 20px; font-size: 0.95rem; line-height: 1.6; }
+        .trend-item p { margin: 0; font-size: 0.95rem; line-height: 1.7; }
+
+        /* ── 경기 결과 카드 ── */
+        .match-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 24px; border-radius: 10px; margin-bottom: 12px;
+        }
+        .match-card .match-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+        .match-score {
+            display: flex; align-items: center; justify-content: center;
+            gap: 20px; font-size: 1.4rem; font-weight: 700;
+        }
+        .match-score .team { flex: 1; text-align: center; }
+        .match-score .score { color: var(--point-red-key); font-size: 2rem; }
+        .match-score .vs { color: var(--text-muted); font-size: 1rem; }
+        .winner-badge { display: inline-block; font-size: 0.75rem; background: rgba(249,66,66,0.15); color: var(--point-red-key); border-radius: 4px; padding: 2px 8px; margin-left: 8px; font-weight: 700; }
+
+        .info-list { margin: 10px 0 0; padding-left: 20px; font-size: 0.95rem; line-height: 1.7; }
         .info-list li { margin-bottom: 8px; }
-        
-        .text-left { text-align: left !important; }
-        .highlight-red { color: var(--point-red-key); font-weight: 700; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.6rem; }
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .match-score { font-size: 1.1rem; gap: 12px; }
+        }
     </style>
 </head>
 <body>
 
+<!-- ══════════════════ 로딩 오버레이 ══════════════════ -->
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <div id="loading-text">구글 시트에서 데이터를 불러오는 중...</div>
+</div>
+
 <div class="container">
-    
+
+    <div id="error-banner"></div>
+
+    <!-- ── 헤더 ── -->
     <header class="report-header">
-        <div class="eyebrow">2026 TFAS CIRCUIT 1</div>
-        <h1>2026 TFAS CIRCUIT 1 일일 리포트</h1>
+        <div class="eyebrow" id="hdr-circuit">로딩 중...</div>
+        <h1 id="hdr-title">일일 리포트</h1>
         <div class="metadata">
-            <div class="meta-item"><span class="label">작성자 :</span> 슈터본부 슈터OPS실 브랜딩팀</div>
+            <div class="meta-item"><span class="label">작성자 :</span><span id="hdr-author"></span></div>
+            <div class="meta-item"><span class="label">기준일 :</span><span id="hdr-date"></span></div>
         </div>
-        <div class="disclaimer-box">
+        <div>
             <div class="disclaimer">※ LLM을 활용하여 1차 가공한 내용을 검토 및 보완했습니다.</div>
             <div class="disclaimer">※ 일부 지표는 외부 트래킹 사이트(Esports Chart, 소프트콘 등)를 기반으로 작성되었고, 실제 지표와는 차이가 있을 수 있습니다.</div>
         </div>
     </header>
 
+    <!-- ════════════════ 1. 요약 ════════════════ -->
     <h2>1. 요약</h2>
-    <div class="grid-cards">
-        <div class="card">
-            <div class="title">PCCU (최고 동시 시청자)</div>
-            <div class="value">42,150</div>
-            <div class="desc">전 시즌 대비 <span class="diff up">▲ 12.4%</span></div>
-        </div>
-        <div class="card">
-            <div class="title">ACU (평균 동시 시청자)</div>
-            <div class="value">28,400</div>
-            <div class="desc">전 시즌 대비 <span class="diff up">▲ 8.2%</span></div>
-        </div>
-        <div class="card">
-            <div class="title">VIEW (누적 조회수)</div>
-            <div class="value">1,205,000</div>
-            <div class="desc">전 시즌 대비 <span class="diff up">▲ 15.1%</span></div>
-        </div>
-        <div class="card">
-            <div class="title">글로벌 시청자 비중</div>
-            <div class="value" style="color: #ffffff;">28.5%</div>
-            <div class="desc desc-muted">이번 시즌 신규 지표</div>
-        </div>
+    <div class="grid-cards" id="summary-cards">
+        <div class="card"><div class="title">PCCU (최고 동시 시청자)</div><div class="value" id="s-pccu">-</div><div class="desc" id="s-pccu-diff"></div></div>
+        <div class="card"><div class="title">ACU (평균 동시 시청자)</div><div class="value" id="s-acu">-</div><div class="desc" id="s-acu-diff"></div></div>
+        <div class="card"><div class="title">VIEW (누적 조회수)</div><div class="value" id="s-view">-</div><div class="desc" id="s-view-diff"></div></div>
+        <div class="card"><div class="title">글로벌 시청자 비중</div><div class="value" id="s-global" style="color:#fff;">-</div><div class="desc desc-muted" id="s-global-desc"></div></div>
     </div>
     <div class="summary-box">
-        <ul class="info-list" style="margin-top: 0;">
-            <li>개막전 매치업에 대한 기대감으로 방송 시작 직후 트래픽이 크게 상승함.</li>
-            <li>특정 세트 진행 중 메타 고착화에 대한 시청자들의 지루함 언급이 있었음.</li>
-            <li>2세트 중반 약 3분간 송출 플랫폼 화질 저하 및 버퍼링 이슈 발생.</li>
-        </ul>
-        <p style="margin-left: 20px;"><strong>특이 사항 :</strong> 없음</p>
+        <ul class="info-list" id="summary-bullets"><li class="llm-loading">핵심 인사이트 생성 중</li></ul>
+        <p><strong>특이 사항 :</strong> <span id="summary-special">-</span></p>
         <hr>
-        <p>📌 <strong style="color: var(--point-red-key);">핵심 요약 :</strong> 전반적인 지표는 이전 시즌 개막전 대비 약 10% 이상 상승하며 성공적인 출발을 보였습니다. 긍정적인 경기력 평가가 주를 이루었으나, 순간적인 플랫폼 버퍼링 이슈에 대한 개선이 필요해 보입니다.</p>
+        <p>📌 <strong style="color:var(--point-red-key);">핵심 요약 :</strong> <span id="summary-core" class="llm-loading">요약 생성 중</span></p>
     </div>
 
-    <!-- ==================== 2. 시청 지표 추이 ==================== -->
+    <!-- ════════════════ 2. 시청 지표 추이 ════════════════ -->
     <h2>2. 시청 지표 추이</h2>
 
-    <!-- 2-1. 전체 시청 지표 -->
     <h3>2-1. 전체 시청 지표</h3>
-    <div class="grid-cards" style="grid-template-columns: repeat(4, 1fr);">
-        <div class="card" style="padding: 16px;">
-            <div class="title">최고 PCCU</div>
-            <div class="value" style="font-size: 1.8rem;">49,750</div>
-            <div class="desc">전 시즌 대비 <span class="diff up">▲ 12.8%</span></div>
-        </div>
-        <div class="card" style="padding: 16px;">
-            <div class="title">최고 ACU</div>
-            <div class="value" style="font-size: 1.8rem;">34,625</div>
-            <div class="desc">전 시즌 대비 <span class="diff up">▲ 12.1%</span></div>
-        </div>
-        <div class="card" style="padding: 16px;">
-            <div class="title">총 VIEW</div>
-            <div class="value" style="font-size: 1.8rem;">1,825,000</div>
-            <div class="desc">전 시즌 대비 <span class="diff up">▲ 22.2%</span></div>
-        </div>
-        <div class="card" style="padding: 16px;">
-            <div class="title">평균 글로벌 비중</div>
-            <div class="value" style="font-size: 1.8rem; color: #ffffff;">28.5%</div>
-            <div class="desc desc-muted">이번 시즌 신규 지표</div>
-        </div>
+    <div class="grid-cards grid-4">
+        <div class="card" style="padding:16px;"><div class="title">최고 PCCU</div><div class="value sm" id="t-pccu">-</div><div class="desc" id="t-pccu-diff"></div></div>
+        <div class="card" style="padding:16px;"><div class="title">최고 ACU</div><div class="value sm" id="t-acu">-</div><div class="desc" id="t-acu-diff"></div></div>
+        <div class="card" style="padding:16px;"><div class="title">총 VIEW</div><div class="value sm" id="t-view">-</div><div class="desc" id="t-view-diff"></div></div>
+        <div class="card" style="padding:16px;"><div class="title">평균 글로벌 비중</div><div class="value sm" id="t-global" style="color:#fff;">-</div><div class="desc desc-muted">이번 시즌 신규 지표</div></div>
     </div>
-    <div class="chart-summary text-left">
-        📌 모든 핵심 지표(PCCU, ACU, VIEW)에서 전 시즌 대비 꾸준한 상승세를 보이고 있으며, 특히 개막 3일차에 시청자가 가장 높게 집계되었습니다.
-    </div>
-    <div class="chart-container">
-        <canvas id="trendChart"></canvas>
-    </div>
+    <div class="chart-summary text-left" id="total-insight"><span class="llm-loading">인사이트 생성 중</span></div>
+    <div class="chart-container"><canvas id="trendChart"></canvas></div>
     <table>
-        <thead>
-            <tr>
-                <th>일자</th>
-                <th>PCCU</th>
-                <th>ACU</th>
-                <th>VIEW</th>
-                <th>국가별 비중 (%)</th>
-            </tr>
-        </thead>
+        <thead><tr><th>일자</th><th>PCCU</th><th>ACU</th><th>VIEW</th><th>국가별 비중 (%)</th></tr></thead>
         <tbody id="table-body-total"></tbody>
     </table>
 
-    <!-- 2-2. 한국 시청 지표 -->
     <h3>2-2. 한국 시청 지표</h3>
-    <div class="chart-summary text-left">
-        📌 치지직(CHZZK) 플랫폼의 성장이 두드러지며 국내 시청 지표 상승을 주도했습니다. SOOP(구 아프리카TV)은 코어 팬덤 기반의 안정적인 수치를 유지했습니다.
-    </div>
-     <table>
-        <thead>
-            <tr>
-                <th>일자 / 플랫폼</th>
-                <th>PCCU</th>
-                <th>ACU</th>
-                <th>VIEW</th>
-            </tr>
-        </thead>
+    <div class="chart-summary text-left" id="kr-insight"><span class="llm-loading">인사이트 생성 중</span></div>
+    <table>
+        <thead><tr><th>일자 / 플랫폼</th><th>PCCU</th><th>ACU</th><th>VIEW</th></tr></thead>
         <tbody id="table-body-kr"></tbody>
     </table>
 
-    <!-- 2-3. 글로벌 시청 지표 -->
     <h3>2-3. 글로벌 시청 지표</h3>
-    <div class="chart-summary text-left">
-        📌 영어권 YouTube 채널의 PCCU가 크게 상승하며 글로벌 흥행을 견인했습니다. 일본 지역은 전 시즌과 비슷한 수준을 유지했습니다.
-    </div>
+    <div class="chart-summary text-left" id="global-insight"><span class="llm-loading">인사이트 생성 중</span></div>
     <table>
-        <thead>
-            <tr>
-                <th>일자 / 플랫폼</th>
-                <th>PCCU</th>
-                <th>ACU</th>
-                <th>VIEW</th>
-            </tr>
-        </thead>
+        <thead><tr><th>일자 / 플랫폼</th><th>PCCU</th><th>ACU</th><th>VIEW</th></tr></thead>
         <tbody id="table-body-global"></tbody>
     </table>
-    
-    <!-- ==================== 3. 주요 사항 ==================== -->
+
+    <!-- ════════════════ 3. 주요 사항 ════════════════ -->
     <h2>3. 주요 사항</h2>
-    <div class="chart-summary text-left">
-        📌 개막전 2경기 모두 성공적으로 마무리되었으며, 2세트 중 발생한 플랫폼 이슈는 원인 파악 중입니다.
-    </div>
-    <div class="grid-cards" style="grid-template-columns: 1fr;">
-        <div class="card text-left" style="padding: 24px;">
-            <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--point-red-key);">📊 경기 결과 (개막전)</h3>
-            <ul class="info-list">
-                <li><strong>1경기:</strong> Team A ( 3 ) vs ( 1 ) Team B - Team A 승리</li>
-                <li><strong>2경기:</strong> Team C ( 0 ) vs ( 3 ) Team D - Team D 승리</li>
-            </ul>
-            <h3 style="margin-top: 24px; font-size: 1.1rem; color: var(--point-yellow);">⚠️ 진행 간 이슈 사항</h3>
-            <ul class="info-list">
-                <li>2세트 진행 중 외부 송출 플랫폼(치지직/아프리카TV) 양측에서 순간적인 화질 저하 및 버퍼링 발생 (약 3분간)</li>
-                <li>현재 플랫폼 엔지니어 팀과 원인 파악 및 회선 안정화 작업 진행 중</li>
-            </ul>
-        </div>
+    <div class="chart-summary text-left" id="match-insight"><span class="llm-loading">경기 요약 생성 중</span></div>
+
+    <div style="margin-bottom:20px;">
+        <p style="color:var(--point-red-key);font-weight:700;margin-bottom:12px;">📊 경기 결과</p>
+        <div id="matches-container"></div>
     </div>
 
-    <!-- ==================== 4. 유저 동향 ==================== -->
+    <div id="issues-container" style="display:none;">
+        <p style="color:var(--point-yellow);font-weight:700;margin:24px 0 12px;">⚠️ 진행 간 이슈 사항</p>
+        <div class="trend-item"><ul class="info-list" id="issues-list"></ul></div>
+    </div>
+
+    <!-- ════════════════ 4. 유저 동향 ════════════════ -->
     <h2>4. 유저 동향</h2>
-    <div class="chart-summary text-left">
-        📌 뛰어난 경기력과 역전극에 대한 긍정적 반응이 주를 이루나, 시청 환경 안정성에 대한 피드백이 존재합니다.
-    </div>
-    <div class="trend-item">
-        <p>선수들의 수준 높은 경기력과 예측 불가능한 한타 구도에 대한 찬사가 많았습니다. 특히 3세트 역전승 구간에서 커뮤니티 언급량이 당일 최고치를 기록하며 코어 팬층의 높은 몰입도를 보여주었습니다.</p>
-    </div>
-    <div class="trend-item">
-        <p>특정 조합(예: 러쉬 조합) 위주의 메타가 반복되면서 피로감을 호소하는 의견이 일부 관찰되었습니다. 경기 양상의 다양성 측면에서 이후 매치에서 시청자 반응을 지속적으로 트래킹할 필요가 있습니다.</p>
-    </div>
-    <div class="trend-item">
-        <p>2세트 진행 중 외부 송출 플랫폼(치지직/아프리카TV) 양측에서 순간적인 화질 저하와 버퍼링 현상이 제보되었습니다. 주요 교전 장면을 놓친 시청자들의 강한 불만이 발생했으므로, 플랫폼 측과의 회선 안정화 논의가 필요합니다.</p>
-    </div>
-</div>
+    <div class="chart-summary text-left" id="user-trend-intro"><span class="llm-loading">유저 동향 분석 중</span></div>
+    <div id="user-trends-container"></div>
+
+</div><!-- /container -->
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+// ╔══════════════════════════════════════════════════════════╗
+// ║  ★ 여기만 수정하세요 ★                                    ║
+// ║  Google Sheets를 CSV로 공개 배포한 뒤, 각 탭의 URL 입력  ║
+// ╚══════════════════════════════════════════════════════════╝
+const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE'; // ← 스프레드시트 ID로 교체
+const SHEET_URLS = {
+  meta:    csvUrl(SHEET_ID, 1838780671),    // gid는 각 탭의 실제 gid로 교체 필요
+  total:   csvUrl(SHEET_ID, 1561013866),
+  kr:      csvUrl(SHEET_ID, 1826450007),
+  global:  csvUrl(SHEET_ID, 158960377),
+  matches: csvUrl(SHEET_ID, 2083218010),
+  issues:  csvUrl(SHEET_ID, 1915344438),
+};
 
-    const formatNumber = (num) => new Intl.NumberFormat('ko-KR').format(num);
-    
-    const createTableDiffSpan = (current, previous) => {
-        if (previous === 0) return '';
-        const diff = ((current - previous) / previous) * 100;
-        if (isNaN(diff)) return '';
-        const className = diff >= 0 ? 'up' : 'down';
-        const symbol = diff >= 0 ? '▲' : '▼';
-        return `<span class="table-diff ${className}">${symbol} ${Math.abs(diff).toFixed(1)}%</span>`;
-    };
+function csvUrl(id, gid) {
+  return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+}
 
-    const highlightHighestShare = (shareString) => {
-        const parts = shareString.split(' / ');
-        let maxVal = -1;
-        let maxIdx = -1;
-        
-        parts.forEach((part, idx) => {
-            const match = part.match(/(\d+)%/);
-            if(match) {
-                const val = parseInt(match[1]);
-                if(val > maxVal) {
-                    maxVal = val;
-                    maxIdx = idx;
-                }
-            }
-        });
+// ──────────────────────────────────────────────
+// 유틸
+// ──────────────────────────────────────────────
+const fmt   = n => new Intl.NumberFormat('ko-KR').format(Math.round(n));
+const fmtPct = n => n.toFixed(1) + '%';
 
-        if(maxIdx !== -1) {
-            parts[maxIdx] = `<span class="highlight-red">${parts[maxIdx]}</span>`;
+function diffPct(current, prev) {
+  if (!prev || prev === 0) return null;
+  return ((current - prev) / prev) * 100;
+}
+
+function diffSpanCard(current, prev) {
+  const d = diffPct(current, prev);
+  if (d === null) return '';
+  const cls = d >= 0 ? 'up' : 'down';
+  const sym = d >= 0 ? '▲' : '▼';
+  return `전 시즌 대비 <span class="diff ${cls}">${sym} ${Math.abs(d).toFixed(1)}%</span>`;
+}
+
+function diffSpanTable(current, prev) {
+  const d = diffPct(current, prev);
+  if (d === null) return '';
+  const cls = d >= 0 ? 'up' : 'down';
+  const sym = d >= 0 ? '▲' : '▼';
+  return `<span class="table-diff ${cls}">${sym} ${Math.abs(d).toFixed(1)}%</span>`;
+}
+
+function highlightMaxShare(shareObj) {
+  // shareObj: { KR:71, HK_TW:11, IN:8, SG:4, JP:2, ETC:4 }
+  const labels = { KR:'한국', HK_TW:'홍콩+대만', IN:'인도', SG:'싱가포르', JP:'일본', ETC:'etc' };
+  let maxKey = Object.keys(shareObj).reduce((a,b) => shareObj[a] > shareObj[b] ? a : b);
+  return Object.entries(labels).map(([k,label]) => {
+    const val = `${label} ${shareObj[k]}%`;
+    return k === maxKey ? `<span class="highlight-red">${val}</span>` : val;
+  }).join(' / ');
+}
+
+// ──────────────────────────────────────────────
+// CSV 파싱
+// ──────────────────────────────────────────────
+async function fetchCSV(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`CSV fetch 실패: ${url}`);
+  const text = await res.text();
+  const rows = text.trim().split('\n').map(r =>
+    r.split(',').map(c => c.trim().replace(/^"|"$/g, ''))
+  );
+  return rows;
+}
+
+function csvToObjects(rows) {
+  const [headers, ...data] = rows;
+  return data.map(row => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = row[i] ?? '');
+    return obj;
+  });
+}
+
+function csvToMeta(rows) {
+  const obj = {};
+  rows.forEach(([k, v]) => { if (k) obj[k] = v; });
+  return obj;
+}
+
+// ──────────────────────────────────────────────
+// LLM 서술 생성 (Claude API)
+// ──────────────────────────────────────────────
+async function generateText(prompt) {
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `당신은 e스포츠 리그 운영팀의 데이터 분석 담당자입니다.
+주어진 수치 데이터를 바탕으로 간결하고 전문적인 한국어 서술을 작성하세요.
+- 불필요한 수식어나 감탄사 없이 사실 기반으로 작성
+- 존댓말 사용 금지, 간결한 명사형으로 마무리
+- 숫자는 그대로 사용 (포맷팅 불필요)
+- JSON이나 마크다운 없이 순수 텍스트만 반환`,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    return data.content?.[0]?.text ?? '';
+  } catch (e) {
+    console.error('LLM 오류:', e);
+    return '(자동 생성 실패 — 직접 입력 필요)';
+  }
+}
+
+// ──────────────────────────────────────────────
+// LLM 프롬프트 빌더
+// ──────────────────────────────────────────────
+function buildSummaryPrompt(totalData, meta) {
+  const last = totalData[totalData.length - 1];
+  const maxPccu = Math.max(...totalData.map(d => +d.PCCU));
+  const maxAcu  = Math.max(...totalData.map(d => +d.ACU));
+  const totalView = totalData.reduce((s, d) => s + +d.VIEW, 0);
+
+  return `다음은 ${meta.circuit_name} 방송 시청 데이터입니다.
+
+기간: ${totalData[0].날짜} ~ ${last.날짜}
+최고 PCCU: ${fmt(maxPccu)} (전 시즌 대비 ${fmtPct(diffPct(maxPccu, +last.PCCU_PREV))})
+최고 ACU: ${fmt(maxAcu)}
+누적 VIEW: ${fmt(totalView)}
+전 시즌 대비 VIEW 증감: ${fmtPct(diffPct(totalView, totalData.reduce((s,d)=>s+(+d.VIEW_PREV),0)))}
+
+위 데이터를 바탕으로 이번 방송의 핵심 인사이트 3가지를 bullet point 없이 \\n으로 구분된 3문장으로 작성하고,
+그 뒤에 "---CORE---" 를 구분자로 넣고, 한 문장으로 된 핵심 요약을 작성하세요.
+형식: [인사이트1]\\n[인사이트2]\\n[인사이트3]\\n---CORE---\\n[핵심 요약]`;
+}
+
+function buildInsightPrompt(label, data, type) {
+  const lines = data.slice(0,3).map(d =>
+    type === 'total'
+      ? `${d.날짜}: PCCU ${fmt(+d.PCCU)} (전시즌 ${fmt(+d.PCCU_PREV)}), ACU ${fmt(+d.ACU)}, VIEW ${fmt(+d.VIEW)}`
+      : `${d.날짜} / ${d.플랫폼}: PCCU ${fmt(+d.PCCU)}, ACU ${fmt(+d.ACU)}, VIEW ${fmt(+d.VIEW)}`
+  ).join('\n');
+
+  return `다음은 ${label} 시청 지표입니다:\n${lines}\n\n이 데이터의 주요 특징을 한 문장(40자 이내)으로 요약하세요. "📌 " 프리픽스는 붙이지 마세요.`;
+}
+
+function buildUserTrendPrompt(totalData, matchData, issueData) {
+  const matchSummary = matchData.map(m =>
+    `${m.경기번호}경기: ${m.팀A} ${m.스코어A}:${m.스코어B} ${m.팀B}`
+  ).join(', ');
+  const issueSummary = issueData.map(i => i.내용).join('; ');
+
+  return `다음은 이번 방송 데이터입니다.
+경기 결과: ${matchSummary}
+이슈: ${issueSummary || '없음'}
+PCCU 추이: ${totalData.map(d=>`${d.날짜}(${fmt(+d.PCCU)})`).join(', ')}
+
+위를 바탕으로 예상되는 시청자/커뮤니티 반응 3가지를 각각 한 문장으로 작성하세요.
+각 항목은 \\n으로 구분하고, bullet이나 번호 없이 문장만 작성하세요.
+형식: [반응1]\\n[반응2]\\n[반응3]`;
+}
+
+// ──────────────────────────────────────────────
+// 렌더링 함수들
+// ──────────────────────────────────────────────
+function renderSummaryCards(totalData) {
+  const maxPccu = Math.max(...totalData.map(d => +d.PCCU));
+  const maxPccuPrev = Math.max(...totalData.map(d => +d.PCCU_PREV));
+  const maxAcu  = Math.max(...totalData.map(d => +d.ACU));
+  const maxAcuPrev = Math.max(...totalData.map(d => +d.ACU_PREV));
+  const totalView = totalData.reduce((s,d) => s + +d.VIEW, 0);
+  const totalViewPrev = totalData.reduce((s,d) => s + +d.VIEW_PREV, 0);
+
+  // 평균 글로벌 비중
+  const avgGlobal = totalData.reduce((s,d) => s + (100 - +d.KR), 0) / totalData.length;
+
+  document.getElementById('s-pccu').textContent = fmt(maxPccu);
+  document.getElementById('s-acu').textContent  = fmt(maxAcu);
+  document.getElementById('s-view').textContent  = fmt(totalView);
+  document.getElementById('s-global').textContent = fmtPct(avgGlobal);
+
+  document.getElementById('s-pccu-diff').innerHTML = diffSpanCard(maxPccu, maxPccuPrev);
+  document.getElementById('s-acu-diff').innerHTML  = diffSpanCard(maxAcu, maxAcuPrev);
+  document.getElementById('s-view-diff').innerHTML  = diffSpanCard(totalView, totalViewPrev);
+  document.getElementById('s-global-desc').textContent = '이번 시즌 신규 지표';
+
+  // 상단 집계 카드 (2-1)
+  document.getElementById('t-pccu').textContent = fmt(maxPccu);
+  document.getElementById('t-acu').textContent  = fmt(maxAcu);
+  document.getElementById('t-view').textContent  = fmt(totalView);
+  document.getElementById('t-global').textContent = fmtPct(avgGlobal);
+  document.getElementById('t-pccu-diff').innerHTML = diffSpanCard(maxPccu, maxPccuPrev);
+  document.getElementById('t-acu-diff').innerHTML  = diffSpanCard(maxAcu, maxAcuPrev);
+  document.getElementById('t-view-diff').innerHTML  = diffSpanCard(totalView, totalViewPrev);
+}
+
+function renderTotalTable(totalData) {
+  const tbody = document.getElementById('table-body-total');
+  totalData.forEach(d => {
+    const shareObj = { KR:+d.KR, HK_TW:+d.HK_TW, IN:+d.IN, SG:+d.SG, JP:+d.JP, ETC:+d.ETC };
+    tbody.innerHTML += `<tr>
+      <td>${d.날짜}</td>
+      <td style="font-weight:700;">${fmt(+d.PCCU)}${diffSpanTable(+d.PCCU, +d.PCCU_PREV)}</td>
+      <td style="font-weight:700;">${fmt(+d.ACU)}${diffSpanTable(+d.ACU, +d.ACU_PREV)}</td>
+      <td style="font-weight:700;">${fmt(+d.VIEW)}${diffSpanTable(+d.VIEW, +d.VIEW_PREV)}</td>
+      <td style="font-size:0.85rem;">${highlightMaxShare(shareObj)}</td>
+    </tr>`;
+  });
+}
+
+function renderKrTable(krData) {
+  const tbody = document.getElementById('table-body-kr');
+  const grouped = {};
+  krData.forEach(d => {
+    if (!grouped[d.날짜]) grouped[d.날짜] = [];
+    grouped[d.날짜].push(d);
+  });
+  Object.entries(grouped).forEach(([date, rows]) => {
+    tbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
+    rows.forEach(d => {
+      tbody.innerHTML += `<tr>
+        <td>${d.플랫폼}</td>
+        <td style="font-weight:700;">${fmt(+d.PCCU)}${diffSpanTable(+d.PCCU, +d.PCCU_PREV)}</td>
+        <td style="font-weight:700;">${fmt(+d.ACU)}${diffSpanTable(+d.ACU, +d.ACU_PREV)}</td>
+        <td style="font-weight:700;">${fmt(+d.VIEW)}${diffSpanTable(+d.VIEW, +d.VIEW_PREV)}</td>
+      </tr>`;
+    });
+  });
+}
+
+function renderGlobalTable(globalData) {
+  const tbody = document.getElementById('table-body-global');
+  const grouped = {};
+  globalData.forEach(d => {
+    if (!grouped[d.날짜]) grouped[d.날짜] = [];
+    grouped[d.날짜].push(d);
+  });
+  Object.entries(grouped).forEach(([date, rows]) => {
+    tbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
+    rows.forEach(d => {
+      tbody.innerHTML += `<tr>
+        <td>${d.플랫폼}</td>
+        <td style="font-weight:700;">${fmt(+d.PCCU)}</td>
+        <td style="font-weight:700;">${fmt(+d.ACU)}</td>
+        <td style="font-weight:700;">${fmt(+d.VIEW)}</td>
+      </tr>`;
+    });
+  });
+}
+
+function renderMatches(matchData) {
+  const container = document.getElementById('matches-container');
+  matchData.forEach(m => {
+    const aWin = +m.스코어A > +m.스코어B;
+    const bWin = +m.스코어B > +m.스코어A;
+    const note = m.비고 ? `<div style="margin-top:8px;font-size:0.8rem;color:var(--text-muted);">${m.비고}</div>` : '';
+    container.innerHTML += `
+      <div class="match-card">
+        <div class="match-label">${m.날짜} · ${m.경기번호}경기</div>
+        <div class="match-score">
+          <div class="team">${m.팀A}${aWin ? '<span class="winner-badge">WIN</span>' : ''}</div>
+          <div class="score">${m.스코어A} <span class="vs">vs</span> ${m.스코어B}</div>
+          <div class="team">${m.팀B}${bWin ? '<span class="winner-badge">WIN</span>' : ''}</div>
+        </div>
+        ${note}
+      </div>`;
+  });
+}
+
+function renderIssues(issueData) {
+  if (!issueData.length) return;
+  document.getElementById('issues-container').style.display = 'block';
+  const list = document.getElementById('issues-list');
+  issueData.forEach(i => {
+    list.innerHTML += `<li>${i.내용}</li>`;
+  });
+}
+
+function renderChart(totalData) {
+  setTimeout(() => {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    const dates    = totalData.map(d => d.날짜);
+    const pccuCur  = totalData.map(d => +d.PCCU);
+    const acuCur   = totalData.map(d => +d.ACU);
+    const pccuPrev = totalData.map(d => +d.PCCU_PREV);
+    const acuPrev  = totalData.map(d => +d.ACU_PREV);
+    const viewCur  = totalData.map(d => +d.VIEW);
+    const viewPrev = totalData.map(d => +d.VIEW_PREV);
+
+    const redGrad = ctx.createLinearGradient(0,0,0,400);
+    redGrad.addColorStop(0, 'rgba(249,66,66,0.25)');
+    redGrad.addColorStop(1, 'rgba(249,66,66,0.02)');
+    const grayGrad = ctx.createLinearGradient(0,0,0,400);
+    grayGrad.addColorStop(0, 'rgba(156,163,175,0.2)');
+    grayGrad.addColorStop(1, 'rgba(156,163,175,0.02)');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: dates,
+        datasets: [
+          { type:'line', label:'이번 시즌 PCCU', data:pccuCur, borderColor:'#F94242', yAxisID:'y-left', pointBackgroundColor:'#1A1D24', pointBorderColor:'#F94242', pointRadius:5, borderWidth:3, tension:0.4 },
+          { type:'line', label:'이번 시즌 ACU',  data:acuCur,  borderColor:'#ff7070', yAxisID:'y-left', pointRadius:3, borderWidth:2, tension:0.4 },
+          { type:'line', label:'지난 시즌 PCCU', data:pccuPrev, borderColor:'#9ca3af', borderDash:[5,5], yAxisID:'y-left', pointRadius:3, borderWidth:2, tension:0.4 },
+          { type:'line', label:'지난 시즌 ACU',  data:acuPrev,  borderColor:'#6b7280', borderDash:[3,3], yAxisID:'y-left', pointRadius:0, borderWidth:2, tension:0.4 },
+          { type:'bar', label:'이번 시즌 VIEW', data:viewCur, backgroundColor:redGrad, borderColor:'rgba(249,66,66,0.4)', borderWidth:{top:1,left:1,right:1,bottom:0}, yAxisID:'y-right', borderRadius:4, barPercentage:0.6, categoryPercentage:0.8 },
+          { type:'bar', label:'지난 시즌 VIEW', data:viewPrev, backgroundColor:grayGrad, borderColor:'rgba(156,163,175,0.3)', borderWidth:{top:1,left:1,right:1,bottom:0}, yAxisID:'y-right', borderRadius:4, barPercentage:0.6, categoryPercentage:0.8 },
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
+        plugins:{ legend:{ labels:{ color:'#e5e7eb', usePointStyle:true } } },
+        scales:{
+          x:{ grid:{color:'#2d333b'}, ticks:{color:'#9ca3af'} },
+          'y-left':{ position:'left', grid:{color:'#2d333b'}, ticks:{color:'#9ca3af'}, title:{display:true, text:'PCCU / ACU (명)', color:'#9ca3af'} },
+          'y-right':{ position:'right', grid:{drawOnChartArea:false}, ticks:{color:'#9ca3af'}, title:{display:true, text:'VIEW (회)', color:'#9ca3af'}, suggestedMin:0 }
         }
-        
-        return parts.join(' / ');
-    };
-
-    const dates = ['2024-03-01', '2024-03-02', '2024-03-03', '2024-03-04', '2024-03-05', '2024-03-06'];
-    
-    const countryShareData = [
-        "한국 71% / 홍콩+대만 11% / 인도 8% / 싱가포르 4% / 일본 2% / etc 4%",
-        "한국 68% / 홍콩+대만 13% / 인도 7% / 싱가포르 5% / 일본 3% / etc 4%",
-        "한국 73% / 홍콩+대만 10% / 인도 6% / 싱가포르 3% / 일본 3% / etc 5%",
-        "한국 70% / 홍콩+대만 12% / 인도 8% / 싱가포르 4% / 일본 2% / etc 4%",
-        "한국 69% / 홍콩+대만 14% / 인도 7% / 싱가포르 5% / 일본 2% / etc 3%",
-        "한국 72% / 홍콩+대만 11% / 인도 7% / 싱가포르 4% / 일본 3% / etc 3%"
-    ];
-
-    const tDataCurrent = dates.map((_, i) => ({ pccu: 35000+i*2950, acu: 24000+i*2125, view: 950000+i*175000 }));
-    const tDataPrev = dates.map((_, i) => ({ pccu: 31000+i*2625, acu: 22000+i*1750, view: 800000+i*137500 }));
-
-    const krDataCurrent = {
-        'SOOP': dates.map((_, i) => ({ pccu: 19800+i*800, acu: 14000+i*550, view: 450000+i*125000 })),
-        'CHZZK': dates.map((_, i) => ({ pccu: 14600+i*1800, acu: 9000+i*1375, view: 300000+i*145000 })),
-        'YouTube(KR)': dates.map((_, i) => ({ pccu: 7800+i*500, acu: 5000+i*450, view: 150000+i*75000 }))
-    };
-    const krDataPrev = {
-        'SOOP': dates.map((_, i) => ({ pccu: 18316+i*740, acu: 13309+i*477, view: 407609+i*113100 })),
-        'CHZZK': dates.map((_, i) => ({ pccu: 11661+i*1438, acu: 7431+i*1040, view: 230414+i*111400 })),
-        'YouTube(KR)': dates.map((_, i) => ({ pccu: 6964+i*446, acu: 4553+i*410, view: 129870+i*65000 }))
-    };
-
-    const globalDataCurrent = {
-        'YouTube(EN)': dates.map((_, i) => ({ pccu: 10200+i*1000, acu: 7000+i*700, view: 250000+i*100000 })),
-        'YouTube(JP)': dates.map((_, i) => ({ pccu: 4800-i*50, acu: 3000+i*100, view: 100000+i*30000 }))
-    };
-
-    // --- 1. 전체 지표 테이블 렌더링 (날짜 가운데 정렬) ---
-    const totalTbody = document.getElementById('table-body-total');
-    dates.forEach((date, i) => {
-        const current = tDataCurrent[i];
-        const previous = tDataPrev[i];
-        const highlightedShareData = highlightHighestShare(countryShareData[i]); 
-        
-        totalTbody.innerHTML += `<tr class="total-data-row">
-            <td>${date}</td>
-            <td style="font-weight:700;">${formatNumber(current.pccu)}${createTableDiffSpan(current.pccu, previous.pccu)}</td>
-            <td style="font-weight:700;">${formatNumber(current.acu)}${createTableDiffSpan(current.acu, previous.acu)}</td>
-            <td style="font-weight:700;">${formatNumber(current.view)}${createTableDiffSpan(current.view, previous.view)}</td>
-            <td style="color: var(--text-main); font-size: 0.9rem; font-weight: 500;">${highlightedShareData}</td>
-        </tr>`;
+      }
     });
+  }, 100);
+}
 
-    // --- 2. 전체 지표 그래프 렌더링 ---
-    setTimeout(() => {
-        const ctx = document.getElementById('trendChart').getContext('2d');
-        const viewCurrentGrad = ctx.createLinearGradient(0, 0, 0, 400);
-        viewCurrentGrad.addColorStop(0, 'rgba(249, 66, 66, 0.25)');
-        viewCurrentGrad.addColorStop(1, 'rgba(249, 66, 66, 0.02)');
-        const viewPrevGrad = ctx.createLinearGradient(0, 0, 0, 400);
-        viewPrevGrad.addColorStop(0, 'rgba(156, 163, 175, 0.2)');
-        viewPrevGrad.addColorStop(1, 'rgba(156, 163, 175, 0.02)');
+// ──────────────────────────────────────────────
+// LLM 텍스트 채우기
+// ──────────────────────────────────────────────
+async function fillLLMTexts(totalData, krData, globalData, matchData, issueData, meta) {
+  // 병렬 실행
+  const [summaryRaw, totalInsight, krInsight, globalInsight, matchInsight, userTrends] = await Promise.all([
+    generateText(buildSummaryPrompt(totalData, meta)),
+    generateText(buildInsightPrompt('전체', totalData, 'total')),
+    generateText(buildInsightPrompt('한국', krData, 'kr')),
+    generateText(buildInsightPrompt('글로벌', globalData, 'global')),
+    generateText(`다음 경기 결과를 한 문장으로 요약하세요:\n${matchData.map(m=>`${m.경기번호}경기: ${m.팀A} ${m.스코어A}:${m.스코어B} ${m.팀B}`).join(', ')}`),
+    generateText(buildUserTrendPrompt(totalData, matchData, issueData)),
+  ]);
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: dates,
-                datasets: [
-                    { type: 'line', label: '이번 시즌 PCCU', data: tDataCurrent.map(d=>d.pccu), borderColor: '#F94242', yAxisID: 'y-left', pointBackgroundColor: '#1A1D24', pointBorderColor: '#F94242', pointRadius: 5, borderWidth: 3, tension: 0.4 },
-                    { type: 'line', label: '이번 시즌 ACU', data: tDataCurrent.map(d=>d.acu), borderColor: '#ff7070', yAxisID: 'y-left', pointRadius: 3, borderWidth: 2, tension: 0.4 },
-                    { type: 'line', label: '지난 시즌 PCCU', data: tDataPrev.map(d=>d.pccu), borderColor: '#9ca3af', borderDash:[5,5], yAxisID: 'y-left', pointRadius: 3, borderWidth: 2, tension: 0.4 },
-                    { type: 'line', label: '지난 시즌 ACU', data: tDataPrev.map(d=>d.acu), borderColor: '#6b7280', borderDash:[3,3], yAxisID: 'y-left', pointRadius: 0, borderWidth: 2, tension: 0.4 },
-                    { type: 'bar', label: '이번 시즌 VIEW', data: tDataCurrent.map(d=>d.view), backgroundColor: viewCurrentGrad, borderColor: 'rgba(249, 66, 66, 0.4)', borderWidth: {top:1, left:1, right:1, bottom:0}, yAxisID: 'y-right', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
-                    { type: 'bar', label: '지난 시즌 VIEW', data: tDataPrev.map(d=>d.view), backgroundColor: viewPrevGrad, borderColor: 'rgba(156, 163, 175, 0.3)', borderWidth: {top:1, left:1, right:1, bottom:0}, yAxisID: 'y-right', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { labels: { color: '#e5e7eb', usePointStyle: true } } },
-                scales: {
-                    x: { grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' } },
-                    'y-left': { position: 'left', grid: { color: '#2d333b' }, ticks: { color: '#9ca3af' }, title: { display: true, text: 'PCCU / ACU (명)', color: '#9ca3af' } },
-                    'y-right': { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#9ca3af' }, title: { display: true, text: 'VIEW (회)', color: '#9ca3af' }, suggestedMin: 0 }
-                }
-            }
-        });
-    }, 100);
+  // 요약 bullets + core
+  const [bullets, core] = summaryRaw.split('---CORE---').map(s => s.trim());
+  const bulletEl = document.getElementById('summary-bullets');
+  bulletEl.innerHTML = bullets.split('\n').filter(Boolean).map(b => `<li>${b}</li>`).join('');
+  document.getElementById('summary-core').textContent = core || summaryRaw;
 
-    // --- 3. 한국 지표 테이블 렌더링 (날짜 구분선 왼쪽 정렬) ---
-    const krTbody = document.getElementById('table-body-kr');
-    dates.forEach((date, i) => {
-        krTbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
-        Object.keys(krDataCurrent).forEach(platform => {
-            const current = krDataCurrent[platform][i];
-            const previous = krDataPrev[platform][i];
-            krTbody.innerHTML += `<tr class="sub-row">
-                <td>${platform}</td>
-                <td style="font-weight:700;">${formatNumber(current.pccu)}${createTableDiffSpan(current.pccu, previous.pccu)}</td>
-                <td style="font-weight:700;">${formatNumber(current.acu)}${createTableDiffSpan(current.acu, previous.acu)}</td>
-                <td style="font-weight:700;">${formatNumber(current.view)}${createTableDiffSpan(current.view, previous.view)}</td>
-            </tr>`;
-        });
-    });
+  // 인사이트
+  document.getElementById('total-insight').textContent  = '📌 ' + totalInsight;
+  document.getElementById('kr-insight').textContent     = '📌 ' + krInsight;
+  document.getElementById('global-insight').textContent = '📌 ' + globalInsight;
+  document.getElementById('match-insight').textContent  = '📌 ' + matchInsight;
 
-    // --- 4. 글로벌 지표 테이블 렌더링 (날짜 구분선 왼쪽 정렬) ---
-    const globalTbody = document.getElementById('table-body-global');
-    dates.forEach((date, i) => {
-        globalTbody.innerHTML += `<tr class="group-header-row"><td colspan="4">${date}</td></tr>`;
-        Object.keys(globalDataCurrent).forEach(platform => {
-            const current = globalDataCurrent[platform][i];
-            globalTbody.innerHTML += `<tr class="sub-row">
-                <td>${platform}</td>
-                <td style="font-weight:700;">${formatNumber(current.pccu)}</td>
-                <td style="font-weight:700;">${formatNumber(current.acu)}</td>
-                <td style="font-weight:700;">${formatNumber(current.view)}</td>
-            </tr>`;
-        });
-    });
+  // 유저 동향
+  const trendIntro = `📌 뛰어난 경기력과 역전극에 대한 긍정적 반응이 주를 이루나, 시청 환경 안정성에 대한 피드백이 존재합니다.`;
+  document.getElementById('user-trend-intro').textContent = trendIntro;
+  const trendsContainer = document.getElementById('user-trends-container');
+  userTrends.split('\n').filter(Boolean).forEach(t => {
+    trendsContainer.innerHTML += `<div class="trend-item"><p>${t}</p></div>`;
+  });
+}
 
-});
+// ──────────────────────────────────────────────
+// 메인 진입점
+// ──────────────────────────────────────────────
+async function main() {
+  const overlay = document.getElementById('loading-overlay');
+  const loadingText = document.getElementById('loading-text');
+  const errorBanner = document.getElementById('error-banner');
+
+  try {
+    loadingText.textContent = '구글 시트에서 데이터를 불러오는 중...';
+
+    // 병렬 fetch
+    const [metaRows, totalRows, krRows, globalRows, matchRows, issueRows] = await Promise.all([
+      fetchCSV(SHEET_URLS.meta),
+      fetchCSV(SHEET_URLS.total),
+      fetchCSV(SHEET_URLS.kr),
+      fetchCSV(SHEET_URLS.global),
+      fetchCSV(SHEET_URLS.matches),
+      fetchCSV(SHEET_URLS.issues),
+    ]);
+
+    const meta       = csvToMeta(metaRows);
+    const totalData  = csvToObjects(totalRows);
+    const krData     = csvToObjects(krRows);
+    const globalData = csvToObjects(globalRows);
+    const matchData  = csvToObjects(matchRows);
+    const issueData  = csvToObjects(issueRows);
+
+    loadingText.textContent = '데이터 렌더링 중...';
+
+    // 헤더
+    document.getElementById('hdr-circuit').textContent = meta.circuit_name || 'TFAS CIRCUIT';
+    document.getElementById('hdr-title').textContent   = `${meta.circuit_name || ''} 일일 리포트`;
+    document.getElementById('hdr-author').textContent  = meta.author || '';
+    document.getElementById('hdr-date').textContent    = meta.report_date || '';
+    document.getElementById('summary-special').textContent = meta.special_notes || '없음';
+
+    // 데이터 렌더링
+    renderSummaryCards(totalData);
+    renderTotalTable(totalData);
+    renderKrTable(krData);
+    renderGlobalTable(globalData);
+    renderMatches(matchData);
+    renderIssues(issueData);
+    renderChart(totalData);
+
+    // 로딩 오버레이 숨기기
+    overlay.classList.add('hidden');
+
+    // LLM 텍스트 비동기 채우기 (UI 먼저 노출 후 진행)
+    loadingText.textContent = 'AI 서술 생성 중...';
+    fillLLMTexts(totalData, krData, globalData, matchData, issueData, meta);
+
+  } catch (err) {
+    overlay.classList.add('hidden');
+    errorBanner.classList.add('show');
+    errorBanner.innerHTML = `
+      <strong>⚠️ 데이터 로드 실패</strong><br>
+      ${err.message}<br><br>
+      <small>구글 시트가 "링크가 있는 모든 사용자" 공개로 설정되어 있는지 확인하세요.<br>
+      또는 <code>SHEET_ID</code>와 각 탭의 <code>gid</code>가 올바른지 확인하세요.</small>
+    `;
+    console.error(err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', main);
 </script>
-
 </body>
 </html>
