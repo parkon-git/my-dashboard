@@ -26,8 +26,21 @@ exports.handler = async function(event) {
       })
     });
 
-    const data = await response.json();
-    const text = data.content?.[0]?.text ?? '';
+    const rawText = await response.text();
+    console.log('Anthropic raw response:', rawText);
+
+    const data = JSON.parse(rawText);
+    console.log('Parsed data:', JSON.stringify(data));
+
+    let text = '';
+    if (data.content && Array.isArray(data.content) && data.content.length > 0) {
+      text = data.content[0].text || '';
+    } else if (data.error) {
+      console.error('Anthropic API error:', data.error);
+      text = '';
+    }
+
+    console.log('Extracted text:', text);
 
     return {
       statusCode: 200,
@@ -35,6 +48,7 @@ exports.handler = async function(event) {
       body: JSON.stringify({ text })
     };
   } catch (err) {
+    console.error('Handler error:', err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
