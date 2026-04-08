@@ -1,2 +1,9 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE';
+const SHEET_URLS = {
+  meta:    csvUrl(SHEET_ID, 1838780671),
+  total:   csvUrl(SHEET_ID, 1561013866),
+  kr:      csvUrl(SHEET_ID, 1826450007),
+  global:  csvUrl(SHEET_ID, 158960377),
+  matches: csvUrl(SHEET_ID, 2083218010),
+  issues:  csvUrl(SHEET_ID, 1915344438),
+};
